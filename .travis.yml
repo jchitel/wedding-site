@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+  - "8"
+script: npm run deploy-local
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  on:
+    branch: master
