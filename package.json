@@ -1,0 +1,37 @@
+{
+  "name": "wedding-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Website for my 2018 wedding",
+  "scripts": {
+    "build": "webpack",
+    "deploy-local": "ts-node ./scripts/static.tsx",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jchitel/wedding-site.git"
+  },
+  "author": "jchitel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jchitel/wedding-site/issues"
+  },
+  "homepage": "https://github.com/jchitel/wedding-site#readme",
+  "devDependencies": {
+    "@types/react": "^16.0.34",
+    "@types/react-dom": "^16.0.3",
+    "awesome-typescript-loader": "^3.4.1",
+    "css-loader": "^0.28.8",
+    "file-loader": "^1.1.6",
+    "style-loader": "^0.19.1",
+    "ts-node": "^4.1.0",
+    "typescript": "^2.6.2",
+    "webpack": "^3.10.0"
+  },
+  "dependencies": {
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "tslib": "^1.8.1"
+  }
+}
