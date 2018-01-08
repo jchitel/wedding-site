@@ -18,11 +18,13 @@ import App from '../src';
 // render the app to a hydratable string
 const rendered = renderToString(<App />);
 
+const dir = process.argv[2] === '--prod' ? 'dist' : 'build';
+
 // render the document to static markup containing the app string
 const document = renderToStaticMarkup(
     <html>
         <head>
-            <script src="build/bundle.js" />
+            <script src={`${dir}/bundle.js`} />
         </head>
         <body dangerouslySetInnerHTML={{ __html: rendered }}></body>
     </html>

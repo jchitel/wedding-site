@@ -5,8 +5,9 @@
   "description": "Website for my 2018 wedding",
   "scripts": {
     "build": "webpack",
-    "deploy-local": "ts-node ./scripts/static.tsx",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-prod": "webpack --env production",
+    "deploy-local": "npm run build && ts-node ./scripts/static.tsx",
+    "deploy": "npm run build-prod && ts-node ./scripts/static.tsx --prod"
   },
   "repository": {
     "type": "git",
