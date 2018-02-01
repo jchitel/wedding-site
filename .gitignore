@@ -3,3 +3,6 @@ node_modules/
 
 # Local build
 build/
+
+# OSX files
+.DS_Store

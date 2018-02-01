@@ -1,5 +1,5 @@
 const { resolve } = require('path');
-
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = (env) => {
     const release = env === 'production';
@@ -15,10 +15,13 @@ module.exports = (env) => {
         module: {
             rules: [
                 { test: /\.tsx?$/, use: 'awesome-typescript-loader', exclude: /node_modules/ },
-                { test: /\.css$/, use: ['style-loader', 'css-loader'] },
-                { test: /\.(png|svg|jpg|gif)$/, use: 'file-loader' }
+                { test: /\.css$/, use: ExtractTextPlugin.extract({ use: ['css-loader'], fallback: 'style-loader' }) },
+                { test: /\.less$/, use: ExtractTextPlugin.extract({ use: ['css-loader', 'less-loader'], fallback: 'style-loader' }) },
+                { test: /\.(jpg|png|ttf)$/, use: 'file-loader' }
             ]
         },
-        plugins: []
+        plugins: [
+            new ExtractTextPlugin('styles.css')
+        ]
     };
 };

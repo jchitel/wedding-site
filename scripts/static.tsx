@@ -3,6 +3,9 @@ import { renderToString, renderToStaticMarkup } from 'react-dom/server';
 import { writeFileSync as writeFile } from 'fs';
 import { resolve } from 'path';
 
+require.extensions['.less'] = () => ({});
+require.extensions['.png'] = (filename: string) => filename;
+
 import App from '../src';
 
 /**
@@ -17,7 +20,9 @@ const dir = process.argv[2] === '--prod' ? 'dist' : 'build';
 // render the document to static markup containing the app string
 const document = renderToStaticMarkup(
     <html>
-        <head></head>
+        <head>
+            <link rel="stylesheet" href={`${dir}/styles.css`} />
+        </head>
         <body>
             <div id="root" dangerouslySetInnerHTML={{ __html: rendered }} />
             <script src={`${dir}/bundle.js`} />

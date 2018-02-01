@@ -151,12 +151,14 @@ To run the development site, do the following:
 - [ ] Add source maps support to webpack configuration
 - [ ] Create site skeleton:
   - [ ] UNDER CONSTRUCTION banner
-  - [ ] Title
-  - [ ] Countdown
-  - [ ] TOC (w/ links)
-  - [ ] Venue info (w/ links)
-  - [ ] Hotel info (w/ links)
-  - [ ] Embedded Google Map
+  - [x] Title
+  - [x] Countdown
+  - [x] TOC (w/ links)
+  - [x] Venue info (w/ links)
+  - [x] Hotel info (w/ links)
+  - [x] Embedded Google Map
+    - [ ] Display markers
+    - [ ] Allow input for directions
   - [ ] Links to registries
   - [ ] RSVP
   - [ ] Info about couple
