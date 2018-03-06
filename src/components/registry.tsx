@@ -15,6 +15,13 @@ const targetLink = 'https://www.target.com/gift-registry/giftgiver?registryId=32
 const bbbLink = 'https://www.bedbathandbeyond.com/store/giftregistry/view_registry_guest.jsp?eventType=Wedding&registryId=545402352';
 const amazonLink = 'https://www.amazon.com/wedding/jake-chitel-megan-heim-milwaukee-june-2018/registry/1PNJF2X8JJ9C1';
 
+let [targetImg, bbbImg, amazonImg] = [target, bbb, amazon];
+if (process.env.NODE_ENV === 'production') {
+    targetImg = `dist/${targetImg}`;
+    bbbImg = `dist/${bbbImg}`;
+    amazonImg = `dist/${amazonImg}`;
+}
+
 export default class Registry extends React.PureComponent<{}, RegistryState> {
     constructor(props: {}) {
         super(props);
@@ -23,7 +30,7 @@ export default class Registry extends React.PureComponent<{}, RegistryState> {
     }
 
     componentDidMount() {
-        this.setState({ target, bbb, amazon });
+        this.setState({ target: targetImg, bbb: bbbImg, amazon: amazonImg });
     }
 
     render() {
