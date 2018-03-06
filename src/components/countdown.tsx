@@ -3,10 +3,21 @@ import { centerText } from '../styles';
 
 
 const ceremonyTime = new Date(1529780400000);
-const countdownStyle = {
+const countdownStyle: React.CSSProperties = {
     fontFamily: 'wizard-hand',
     fontSize: '4em',
-    ...centerText
+    display: 'flex',
+    padding: '0 50px',
+    justifyContent: 'center'
+};
+const unitStyle = {
+    display: 'block',
+    width: '22.5%',
+    textAlign: 'center'
+};
+const slashStyle = {
+    display: 'block',
+    width: '2.5%'
 };
 
 interface ICountdownState {
@@ -20,7 +31,7 @@ export default class Countdown extends React.PureComponent<{}, ICountdownState> 
     constructor(props: {}) {
         super(props);
 
-        this.state = this.getValues();
+        this.state = { days: 0, hours: 0, minutes: 0, seconds: 0 };
     }
 
     componentDidMount() {
@@ -42,16 +53,22 @@ export default class Countdown extends React.PureComponent<{}, ICountdownState> 
         };
     }
 
-    updateValues = () => {
-        this.setState(this.getValues());
-    }
+    updateValues = () => this.setState(this.getValues());
 
     render() {
         const { days, hours, minutes, seconds } = this.state;
 
         return (
             <>
-                <span style={{ ...countdownStyle, marginTop: 20 }}>{days} Days / {hours} Hours / {minutes} Minutes / {seconds} Seconds</span>
+                <span style={{ ...countdownStyle, marginTop: 20 }}>
+                    <span style={{...unitStyle}}>{days} Days</span>
+                    <span style={{...slashStyle}}> / </span>
+                    <span style={{...unitStyle}}>{hours} Hours</span>
+                    <span style={{...slashStyle}}> / </span>
+                    <span style={{...unitStyle}}>{minutes} Minutes</span>
+                    <span style={{...slashStyle}}> / </span>
+                    <span style={{...unitStyle}}>{seconds} Seconds</span>
+                </span>
                 <span style={{ ...centerText, fontSize: '2em', fontFamily: 'parchment-print' }}>Until</span>
                 <span style={countdownStyle}>Saturday, June 23, 2018</span>
                 <span style={countdownStyle}>2:00 PM</span>

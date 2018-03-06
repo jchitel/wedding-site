@@ -21,8 +21,7 @@ export default function App() {
         maxWidth: 900,
         minHeight: '100%',
         margin: 'auto',
-        boxShadow: '-20px 0 20px 10px rgba(0,0,0,0.75), 20px 0 20px 10px rgba(0,0,0,0.75)',
-        paddingBottom: 40
+        boxShadow: '-20px 0 20px 10px rgba(0,0,0,0.75), 20px 0 20px 10px rgba(0,0,0,0.75)'
     };
     const titleStyle = {
         fontFamily: 'wizard-hand',
@@ -46,6 +45,12 @@ export default function App() {
                 <Map />
                 <Hr />
                 <Registry />
+                <div style={{ paddingTop: 60, paddingBottom: 10, fontSize: '1em', ...centerText }}>
+                    <span>
+                        Created by Jake Chitel &copy; 2018
+                        | <a href="https://github.com/jchitel/wedding-site" target="_blank">Source Code</a>
+                    </span>
+                </div>
             </div>
         </div>
     );

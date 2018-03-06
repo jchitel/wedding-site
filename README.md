@@ -9,11 +9,14 @@ The public site is accessible from http://chitelwedding2018.com.
 
 ## Structure
 
-The site is (currently) composed of a root index.html file and a bundle.js file,
-both of which are generated during the build process. The index.html file
-is the root of the site, containing the mount point of the view and any references
-to assets (such as bundle.js). The bundle.js file contains all JS code for the site,
-including all React libraries and the actual view logic for the site.
+The site is (currently) composed of a root index.html file, a bundle.js file,
+and a style.css file, all of which are generated during the build process.
+The index.html file is the root of the site, containing the mount point of the view
+and any references to assets (such as bundle.js). The bundle.js file contains all
+JS code for the site, including all React libraries and the actual view logic for
+the site. The style.css file contains the few styles that needed to be defined in
+CSS (most of the site opts for a CSS-in-JS approach, as is typically recommended
+with React sites.).
 
 ## Build and Deployment
 
@@ -62,8 +65,9 @@ branch. This is the process:
 
 ### Build Process
 
-There are currently two resources that need to be generated in the build script: index.html
-and bundle.js.
+There are currently three resources that need to be generated in the build script: index.html,
+bundle.js, and style.css. There are also several asset files that are simply copied to
+the build directory, all of which are image and font files.
 
 #### `bundle.js`
 
@@ -109,8 +113,8 @@ rendered app markup inserted into the document's body. `renderToStaticMarkup()` 
 same thing as `renderToString()`, but does not include any of the React attributes, leaving
 only a bare HTML string. We do this because React has nothing to do with the markup
 outside of the component tree. This top-level markup also includes the reference to the 
-bundle.js file, which will be 'build/bundle.js' during development and 'dist/bundle.js'
-in production.
+bundle.js file, which will be 'bundle.js' ('build/bundle.js') during development and
+'dist/bundle.js' in production, and likewise for 'style.css'.
 
 The component tree needs to be inserted using `dangerouslySetInnerHTML` because React will
 escape any HTML inserted as a normal string into a component tree, and we want the HTML
@@ -118,9 +122,44 @@ to be unescaped. This is "dangerous" because when user-provided text is inserted
 into a document, dangerous code may be injected into the site. Because this is done at build-time,
 and is not user-provided text, this is not a problem.
 
-The final rendered HTML string is then saved to 'index.html', overwriting any content that was
-there before. Ideally, we would generate this file in 'dist/', but GH Pages does not allow
-any configuration of the location of the root page of the site. It *must* be 'index.html'.
+The final rendered HTML string is then saved to an environment-dependent location, either
+'index.html' for production, or 'build/index.html' for development. The development result
+goes to 'build/' because that is an ignored directory in git, and any html file can be opened
+for local development. For production, the destination *must* be 'index.html', so we leave that
+file unignored, and it will only be generated at deploy-time.
+
+#### `style.css`
+
+Finally, we have a 'style.css' file, which contains all externally-specified styles for the app.
+It is usually fitting to use a CSS preprocessor, because vanilla CSS can be overly verbose.
+The CSS preprocessor I chose was Less. The other popular option these days is Sass, which
+is not too different. I chose Less because it has a pure JS compiler and thus does not require
+complex post-install steps to install, as Sass does.
+
+Less compiles to CSS, so it needs to be factored into the build process. Webpack can handle
+Less code just like it handles TypeScript code, using the `less-loader`. This loader is
+configured to run for every imported file with a '.less' extension. CSS also requires
+additional complexity in a webpack setup if one wishes to compile it to its own file
+(which is usually desirable because the alternative means embedding styles to be injected
+into the JS bundle, meaning you won't see styles until the JS runs). This means using
+webpack's `ExtractTextPlugin`. When configured, this will bypass Webpack's normal JS
+injection process and output the content into a separate bundle, in this case 'style.css'.
+
+At the moment, I only have one Less file: 'src/style.less'. I prefer to specify as much
+styles as possible in JS, particularly for React. React allows you to specify your HTML
+in JS, so being able to also specify CSS in JS means that an entire app can be coded in
+one place. However, it is not always possible to specify all styles in JS (technically
+it is always possible, but requires a lot of overhead that isn't worth it), for example
+when specifying styles for pseudo-classes or using media queries. For these cases, and
+a few others that are required for convenience, I use Less. This single Less file can
+then be imported in 'src/index.tsx' and will be compiled with the rest of the bundle.
+
+#### Other Resources
+
+There are also image and font files that are included in this app. These can be included
+via Webpack's `file-loader`, which will simply copy the files to the destination directory.
+When the files are imported in JS, their relative paths are returned. This is necessary
+because Webpack mangles the file names.
 
 ### Full Process
 
@@ -132,7 +171,7 @@ Given the above context, this is the full process:
 4. Repo clone set up
 5. Build script run, generating 'dist/bundle.js' and 'index.html'.
 6. Force-push to 'gh-pages' branch.
-7. Travis buil complete.
+7. Travis build complete.
 8. Navigate to http://chitelwedding2018.com to view the deployed result.
 
 ## Development
@@ -142,7 +181,7 @@ To run the development site, do the following:
 1. Ensure Node.js >= 8 and NPM >= 5 (comes with Node >= 8) are installed.
 2. `git clone https://github.com/jchitel/wedding-site.git && cd wedding-site`
 3. `npm run deploy-local`
-4. Navigate to 'file:///.../wedding-site/index.html
+4. Navigate to 'file:///.../wedding-site/build/index.html
 
 ## TODO
 
@@ -159,7 +198,7 @@ To run the development site, do the following:
   - [x] Embedded Google Map
     - [ ] Display markers
     - [ ] Allow input for directions
-  - [ ] Links to registries
+  - [x] Links to registries
   - [ ] RSVP
   - [ ] Info about couple
   - [ ] Info about wedding party
@@ -170,7 +209,7 @@ To run the development site, do the following:
   - [ ] RSVP Database
   - [ ] SMS/Email subscriptions
   - [ ] Lambda logic
-- [ ] Add countdown logic
+- [x] Add countdown logic
 - [ ] Add Google Maps logic
 - [ ] Add RSVP logic
   - [ ] Populate DB with guest info (mainly manual)
