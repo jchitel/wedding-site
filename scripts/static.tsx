@@ -21,13 +21,13 @@ const dir = process.argv[2] === '--prod' ? 'dist' : 'build';
 const document = renderToStaticMarkup(
     <html>
         <head>
-            <link rel="stylesheet" href={`${dir}/styles.css`} />
+            <link rel="stylesheet" href="styles.css" />
         </head>
         <body>
             <div id="root" dangerouslySetInnerHTML={{ __html: rendered }} />
-            <script src={`${dir}/bundle.js`} />
+            <script src="bundle.js" />
         </body>
     </html>
 );
 // write the document
-writeFile(resolve(__dirname, '..', 'index.html'), document, { encoding: 'utf8', flag: 'w' });
+writeFile(resolve(__dirname, '..', dir, 'index.html'), document, { encoding: 'utf8', flag: 'w' });
