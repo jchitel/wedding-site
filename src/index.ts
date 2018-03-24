@@ -1,3 +1,4 @@
+console.log('HELLO WORLD');
 import serverless from 'serverless-http';
 import app from './server';
 
