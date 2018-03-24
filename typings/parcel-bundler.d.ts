@@ -4,6 +4,7 @@ declare module 'parcel-bundler' {
     interface BundlerOptions {
         hmrPort?: number;
         outDir?: string;
+        target?: 'browser' | 'node' | 'electron';
     }
 
     class Bundler {
