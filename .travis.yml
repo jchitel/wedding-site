@@ -7,6 +7,7 @@ deploy:
   access_key_id: AKIAJWUKJA7KSTTQTWCQ
   function_name: wedding-site
   role: arn:aws:iam::289214495984:role/service-role/wedding-site-role
+  runtime: nodejs6.10
   handler_name: index.handler
   zip: ./build/lambda.zip
   secret_access_key:
