@@ -1,8 +1,11 @@
 # Installed node modules
 node_modules/
 
-# Local build
+# Build target
 build/
 
 # OSX files
 .DS_Store
+
+# Parcel cache
+.cache/

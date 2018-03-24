@@ -1,14 +1,15 @@
-import 'antd/lib/style';
-import './style.less';
+if (typeof document !== 'undefined') {
+    require('antd/lib/style');
+    require('../style.less');
+}
 import * as React from 'react';
-import { hydrate } from 'react-dom';
-import { colorPrimary, centerText } from './styles';
-import Countdown from './components/countdown';
-import Toc from './components/toc';
-import Venue from './components/venue';
-import Hotel from './components/hotel';
-import Map from './components/map';
-import Registry from './components/registry';
+import { colorPrimary, centerText } from '../styles';
+import Countdown from './countdown';
+import Toc from './toc';
+import Venue from './venue';
+import Hotel from './hotel';
+import Map from './map';
+import Registry from './registry';
 
 
 export default function App() {
@@ -57,8 +58,3 @@ export default function App() {
 }
 
 const Hr = () => <hr style={{ width: '80%', borderStyle: 'solid', borderColor: '#203453' }} />;
-
-// document will not be available when doing server-side rendering
-if (typeof document !== 'undefined') {
-    hydrate(<App />, document.getElementById('root'));
-}
