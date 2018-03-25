@@ -2,10 +2,16 @@
 node_modules/
 
 # Build target
-build/
+/build/**
+# Ignore package.json and yarn.lock
+!/build/package.json
+!/build/yarn.lock
 
 # OSX files
 .DS_Store
 
 # Parcel cache
 .cache/
+
+# Yarn error file
+yarn-error.log
