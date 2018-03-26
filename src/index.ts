@@ -1,5 +1,5 @@
 Error.stackTraceLimit = Infinity;
-import serverless from 'serverless-http';
+import serverless = require('serverless-http');
 import app from './server';
 
 
