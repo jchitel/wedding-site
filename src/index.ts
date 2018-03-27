@@ -16,7 +16,7 @@ export const handler = (event: any, context: any, callback: any) => {
     Error.stackTraceLimit = Infinity;
     const tsNode = require('ts-node');
     // register ts-node
-    tsNode.register({ project: `${__dirname}/tsconfig.json`, ignore: /\/node_modules\/(?!koa-mount)/ });
+    tsNode.register({ project: `${__dirname}/tsconfig.json`, skipIgnore: true });
 
     const serverless = require('serverless-http').default;
     const app = require('./server').default;
