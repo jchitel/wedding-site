@@ -34,8 +34,10 @@ function installLambdaDependencies(dir: string) {
 
     // bundle site
     await bundle('./src/site/index.tsx', path.join(build, 'bundle'));
-    // bundle server
-    //await bundle('./src/index.ts', build, 'node');
+    // copy image files
+    console.log('Copying images...');
+    fs.copySync(path.join(__dirname, '..', 'src/site/images'), path.join(build, 'site/images'), { recursive: true });
+    console.log('Images copied.\n');
 
     // deploy mode
     if (process.env.NODE_ENV === 'production') {
