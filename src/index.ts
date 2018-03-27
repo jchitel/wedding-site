@@ -1,7 +1,7 @@
 /*Error.stackTraceLimit = Infinity;
 import * as tsNode from 'ts-node';
 // register ts-node
-tsNode.register({ compilerOptions: { allowJs: true, target: 'es2015' } });
+tsNode.register({ project: `${__dirname}/tsconfig.json` });
 
 import serverless from 'serverless-http';
 import app from './server';
@@ -16,7 +16,7 @@ export const handler = (event: any, context: any, callback: any) => {
     Error.stackTraceLimit = Infinity;
     const tsNode = require('ts-node');
     // register ts-node
-    tsNode.register({ compilerOptions: { allowJs: true, target: 'es2015' } });
+    tsNode.register({ project: `${__dirname}/tsconfig.json`  });
 
     const serverless = require('serverless-http').default;
     const app = require('./server').default;

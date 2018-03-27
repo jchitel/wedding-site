@@ -6,6 +6,7 @@ node_modules/
 # Ignore package.json and yarn.lock
 !/build/package.json
 !/build/yarn.lock
+!/build/tsconfig.json
 
 # OSX files
 .DS_Store

@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "es2015",
+        "module": "commonjs",
+        "lib": ["esnext"],
+        "allowJs": true,
+        "moduleResolution": "node",
+        "types": ["node"],
+        "esModuleInterop": true
+    },
+    "include": [
+        "./node_modules/koa-mount/**/*"
+    ]
+}
