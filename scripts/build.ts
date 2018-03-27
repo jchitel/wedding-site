@@ -2,7 +2,6 @@ import Bundler = require('parcel-bundler');
 import fs = require('fs-extra');
 import path = require('path');
 import archiver = require('archiver');
-import { execSync } from 'child_process';
 
 
 function clean(dir: string, exclusions: string[]) {
@@ -21,13 +20,6 @@ async function bundle(entry: string, outDir: string, target?: 'node') {
     const bundler = new Bundler(entry, { outDir, target });
     await bundler.bundle();
     console.log(`Bundled successfully to ${outDir}\n`);
-}
-
-function installLambdaDependencies(dir: string) {
-    console.log('\tInstalling lambda dependencies...');
-    // run yarn
-    execSync('yarn', { stdio: 'inherit', cwd: dir });
-    console.log('\tDependencies installed.\n');
 }
 
 async function zipDirectory(dir: string, target: string) {
@@ -53,8 +45,6 @@ async function zipDirectory(dir: string, target: string) {
     // deploy mode
     if (process.env.NODE_ENV === 'production') {
         console.log('Setting up deployment package...');
-        // set up lambda dependencies
-        installLambdaDependencies(build);
         // zip the build directory
         await zipDirectory(build, path.join(build, 'lambda.zip'));
     }

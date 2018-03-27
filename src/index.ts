@@ -1,5 +1,12 @@
 Error.stackTraceLimit = Infinity;
-import serverless = require('serverless-http');
+import { execSync } from 'child_process';
+// install npm dependencies
+execSync('npm i', { stdio: 'inherit', cwd: __dirname });
+import * as tsNode from 'ts-node';
+// register ts-node
+tsNode.register();
+
+import serverless from 'serverless-http';
 import app from './server';
 
 
