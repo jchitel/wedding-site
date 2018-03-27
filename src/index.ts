@@ -1,20 +1,30 @@
-console.log('HELLO THERE');
-Error.stackTraceLimit = Infinity;
-console.log('HELLO THERE 1');
+/*Error.stackTraceLimit = Infinity;
 import * as tsNode from 'ts-node';
-console.log('HELLO THERE 2');
 // register ts-node
 tsNode.register({ compilerOptions: { allowJs: true, target: 'es2015' } });
-console.log('HELLO THERE 3');
 
 import serverless from 'serverless-http';
-console.log('HELLO THERE 4');
 import app from './server';
-console.log('HELLO THERE 5');
 
 
-/** export lambda hander wrapped around koa app */
+/** export lambda hander wrapped around koa app * /
 export const handler = serverless(app, {
     callbackWaitsForEmptyEventLoop: true
-});
-console.log('HELLO THERE 6');
+});*/
+
+export const handler = (event: any, context: any, callback: any) => {
+    Error.stackTraceLimit = Infinity;
+    const tsNode = require('ts-node');
+    // register ts-node
+    tsNode.register({ compilerOptions: { allowJs: true, target: 'es2015' } });
+
+    const serverless = require('serverless-http').default;
+    const app = require('./server').default;
+
+
+    /** export lambda hander wrapped around koa app */
+    const _handler = serverless(app, {
+        callbackWaitsForEmptyEventLoop: true
+    });
+    _handler(event, context, callback);
+}
