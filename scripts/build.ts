@@ -5,17 +5,6 @@ import archiver = require('archiver');
 import { execSync } from 'child_process';
 
 
-function clean(dir: string, exclusions: string[]) {
-    console.log('Emptying build/ directory...');
-    const tmp = path.join(dir, '..', 'temp');
-    fs.ensureDirSync(tmp);
-    for (const f of exclusions) fs.copySync(path.join(dir, f), path.join(tmp, f));
-    fs.emptyDirSync(dir);
-    for (const f of exclusions) fs.copySync(path.join(tmp, f), path.join(dir, f));
-    fs.removeSync(tmp);
-    console.log('Directory emptied.\n');
-}
-
 async function bundle(entry: string, outDir: string, target?: 'node') {
     console.log(`Compiling ${entry}...`);
     const bundler = new Bundler(entry, { outDir, target });
@@ -43,12 +32,10 @@ function installLambdaDependencies(dir: string) {
 (async () => {
     const build = path.join(__dirname, '..', 'build');
 
-    // clean
-    clean(build, ['package.json', 'yarn.lock']);
     // bundle site
     await bundle('./src/site/index.tsx', path.join(build, 'bundle'));
     // bundle server
-    await bundle('./src/index.ts', build, 'node');
+    //await bundle('./src/index.ts', build, 'node');
 
     // deploy mode
     if (process.env.NODE_ENV === 'production') {

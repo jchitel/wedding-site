@@ -4,8 +4,8 @@
   "private": true,
   "description": "Website for my 2018 wedding",
   "scripts": {
-    "build": "ts-node --project ./scripts/tsconfig.json ./scripts/build.ts",
-    "deploy": "NODE_ENV=production ts-node --project ./scripts/tsconfig.json ./scripts/build.ts",
+    "build": "tsc && ts-node --project ./scripts/tsconfig.json ./scripts/build.ts",
+    "deploy": "tsc && NODE_ENV=production ts-node --project ./scripts/tsconfig.json ./scripts/build.ts",
     "local": "ts-node --project ./scripts/tsconfig.json ./scripts/local.ts"
   },
   "repository": {
