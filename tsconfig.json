@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./build",
     "target": "es2016",
     "module": "commonjs",
     "lib": ["esnext"],
@@ -8,6 +10,7 @@
     "strictNullChecks": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
+    "allowJs": true,
 
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -16,5 +19,9 @@
     "types": ["node"],
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true
-  }
+  },
+  "exclude": [
+    "./scripts/**/*",
+    "./src/site/**/*"
+  ]
 }

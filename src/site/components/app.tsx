@@ -1,7 +1,3 @@
-if (typeof document !== 'undefined') {
-    require('antd/lib/style');
-    require('../style.less');
-}
 import * as React from 'react';
 import { colorPrimary, centerText } from '../styles';
 import Countdown from './countdown';

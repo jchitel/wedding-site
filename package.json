@@ -4,9 +4,9 @@
   "private": true,
   "description": "Website for my 2018 wedding",
   "scripts": {
-    "build": "ts-node ./scripts/build.ts",
-    "deploy": "NODE_ENV=production ts-node ./scripts/build.ts",
-    "local": "ts-node ./scripts/local.ts"
+    "build": "ts-node --project ./scripts/tsconfig.json ./scripts/build.ts",
+    "deploy": "NODE_ENV=production ts-node --project ./scripts/tsconfig.json ./scripts/build.ts",
+    "local": "ts-node --project ./scripts/tsconfig.json ./scripts/local.ts"
   },
   "repository": {
     "type": "git",

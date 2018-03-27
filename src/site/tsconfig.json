@@ -3,5 +3,8 @@
   "compilerOptions": {
     "lib": ["dom", "esnext"],
     "jsx": "react"
-  }
+  },
+  "files": [
+    "./index.tsx"
+  ]
 }
