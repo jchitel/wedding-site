@@ -8,20 +8,54 @@
     src: url("./images/parchment-print.ttf");
 }
 
+@color-primary: #203453;
+@color-secondary: #EDC200;
+@color-background: #EDD38B;
+
+.center-text {
+    display: block;
+    text-align: center;
+};
+
 #tray {
-    background-image: url(./images/background.jpg);
+    background-image: url("./images/background.jpg");
     background-size: 100%;
     font-family: 'parchment-print';
+    width: 100%;
+    min-height: 100%;
+    color: @color-primary;
 }
 
 #main {
-    background-image: url(./images/background.jpg);
+    background-image: url("./images/background.jpg");
     background-size: 100%;
+    max-width: 900px;
+    min-height: 100%;
+    margin: auto;
+    box-shadow: -20px 0 20px 10px rgba(0,0,0,0.75), 20px 0 20px 10px rgba(0,0,0,0.75);
+}
+
+.title:extend(.center-text)  {
+    font-family: wizard-hand;
+    font-size: 8em;
+    margin-bottom: 20px;
+}
+
+.footer:extend(.center-text) {
+    padding-top: 60px;
+    padding-bottom: 10px;
+    font-size: 1em;
 }
 
 a, a:link, a:hover, a:active, a:visited {
-    color: #203453;
+    color: @color-primary;
     text-decoration: underline;
+}
+
+hr {
+    width: 80%;
+    border-style: solid;
+    border-color: #203453;
 }
 
 .toc {
