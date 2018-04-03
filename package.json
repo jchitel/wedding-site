@@ -8,8 +8,9 @@
     "webpack": "webpack --mode development",
     "webpack-prod": "webpack --mode production",
     "build": "yarn run tsc && yarn run webpack",
-    "deploy": "yarn run tsc && yarn run webpack-prod && ts-node ./scripts/build.ts --prod",
-    "local": "ts-node ./scripts/local.ts"
+    "deploy": "yarn run tsc && yarn run webpack-prod && ts-node ./scripts/deploy.ts --prod",
+    "local": "yarn run webpack && ts-node ./scripts/local.ts",
+    "local-prod": "yarn run webpack-prod && ts-node ./scripts/local.ts"
   },
   "repository": {
     "type": "git",

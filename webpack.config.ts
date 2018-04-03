@@ -4,8 +4,10 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 
 
-const config: webpack.Configuration = {
+const config: (env?: any, argv?: any) => webpack.Configuration = (env = {}, argv = {}) => ({
     entry: './src/site/index.tsx',
+    context: argv.process || __dirname,
+    mode: argv.mode || 'development',
     output: {
         path: resolve(__dirname, 'build', 'bundle')
     },
@@ -43,7 +45,12 @@ const config: webpack.Configuration = {
             favicon: resolve(__dirname, 'src', 'site', 'images', 'favicon.ico'),
             template: resolve(__dirname, 'src', 'site', 'index.html')
         }),
-        new ExtractTextPlugin('index.css')
+        new ExtractTextPlugin('index.css'),
+        new webpack.DefinePlugin({
+            'process.env': {
+                NODE_ENV: `"${argv.mode}"`
+            }
+        })
     ]
-};
+});
 export default config;
