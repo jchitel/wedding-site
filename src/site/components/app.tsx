@@ -1,6 +1,6 @@
 /// <reference path="../../types.d.ts" />
 import * as React from 'react';
-const styles = typeof document !== 'undefined' ? require('../style.less') : {};
+import styles from '../styles/style.less';
 import Countdown from './countdown';
 import Toc from './toc';
 import Venue from './venue';

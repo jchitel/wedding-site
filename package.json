@@ -4,8 +4,11 @@
   "private": true,
   "description": "Website for my 2018 wedding",
   "scripts": {
-    "build": "tsc && ts-node ./scripts/build.ts",
-    "deploy": "tsc && NODE_ENV=production ts-node ./scripts/build.ts",
+    "tsc": "tsc --rootDir src",
+    "webpack": "webpack --mode development",
+    "webpack-prod": "webpack --mode production",
+    "build": "yarn run tsc && yarn run webpack",
+    "deploy": "yarn run tsc && yarn run webpack-prod && ts-node ./scripts/build.ts --prod",
     "local": "ts-node ./scripts/local.ts"
   },
   "repository": {
@@ -21,32 +24,36 @@
   "devDependencies": {
     "@types/archiver": "^2.1.0",
     "@types/aws-lambda": "0.0.33",
+    "@types/express": "^4.11.1",
+    "@types/extract-text-webpack-plugin": "^3.0.2",
     "@types/fs-extra": "^5.0.1",
-    "@types/koa": "^2.0.44",
-    "@types/koa-mount": "^3.0.1",
-    "@types/koa-route": "^3.2.3",
-    "@types/koa-static": "^4.0.0",
+    "@types/html-webpack-plugin": "^2.30.3",
+    "@types/node": "^9.6.1",
     "@types/react": "^16.0.34",
     "@types/react-dom": "^16.0.3",
+    "@types/webpack": "^4.1.3",
     "archiver": "^2.1.1",
+    "awesome-typescript-loader": "^4.0.1",
+    "css-loader": "^0.28.11",
+    "extract-text-webpack-plugin": "next",
+    "file-loader": "^1.1.11",
     "fs-extra": "^5.0.0",
+    "html-webpack-plugin": "^3.1.0",
     "less": "^2.7.3",
+    "less-loader": "^4.1.0",
     "postcss-modules": "^1.1.0",
+    "style-loader": "^0.20.3",
     "ts-node": "^4.1.0",
-    "typescript": "^2.6.2"
+    "typescript": "^2.8.1",
+    "webpack": "^4.4.1",
+    "webpack-cli": "^2.0.13"
   },
   "dependencies": {
-    "@types/koa-send": "^4.1.1",
     "antd": "^3.1.6",
-    "koa": "^2.5.0",
-    "koa-mount": "^3.0.0",
-    "koa-route": "^3.2.0",
-    "koa-send": "^4.1.3",
-    "koa-static": "^4.0.2",
-    "parcel-bundler": "^1.6.2",
+    "express": "^4.16.3",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "serverless-http": "^1.5.3",
-    "tslib": "^1.8.1"
+    "tslib": "^1.9.0"
   }
 }

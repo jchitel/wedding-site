@@ -1,24 +1,9 @@
 import * as React from 'react';
-import { centerText } from '../styles';
+import commonStyles from '../styles/style.less';
+import styles from './countdown.less';
 
 
 const ceremonyTime = new Date(1529780400000);
-const countdownStyle: React.CSSProperties = {
-    fontFamily: 'wizard-hand',
-    fontSize: '4em',
-    display: 'flex',
-    padding: '0 50px',
-    justifyContent: 'center'
-};
-const unitStyle = {
-    display: 'block',
-    width: '22.5%',
-    textAlign: 'center'
-};
-const slashStyle = {
-    display: 'block',
-    width: '2.5%'
-};
 
 interface ICountdownState {
     days: number;
@@ -31,7 +16,7 @@ export default class Countdown extends React.PureComponent<{}, ICountdownState> 
     constructor(props: {}) {
         super(props);
 
-        this.state = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+        this.state = this.getValues();
     }
 
     componentDidMount() {
@@ -60,18 +45,18 @@ export default class Countdown extends React.PureComponent<{}, ICountdownState> 
 
         return (
             <>
-                <span style={{ ...countdownStyle, marginTop: 20 }}>
-                    <span style={{...unitStyle}}>{days} Days</span>
-                    <span style={{...slashStyle}}> / </span>
-                    <span style={{...unitStyle}}>{hours} Hours</span>
-                    <span style={{...slashStyle}}> / </span>
-                    <span style={{...unitStyle}}>{minutes} Minutes</span>
-                    <span style={{...slashStyle}}> / </span>
-                    <span style={{...unitStyle}}>{seconds} Seconds</span>
+                <span className={styles.countdown} style={{ marginTop: 20 }}>
+                    <span className={styles.unitStyle}>{days} Days</span>
+                    <span className={styles.slash}> / </span>
+                    <span className={styles.unit}>{hours} Hours</span>
+                    <span className={styles.slash}> / </span>
+                    <span className={styles.unit}>{minutes} Minutes</span>
+                    <span className={styles.slash}> / </span>
+                    <span className={styles.unit}>{seconds} Seconds</span>
                 </span>
-                <span style={{ ...centerText, fontSize: '2em', fontFamily: 'parchment-print' }}>Until</span>
-                <span style={countdownStyle}>Saturday, June 23, 2018</span>
-                <span style={countdownStyle}>2:00 PM</span>
+                <span className={commonStyles.centerText} style={{ fontSize: '2em', fontFamily: 'parchment-print' }}>Until</span>
+                <span className={styles.countdown}>Saturday, June 23, 2018</span>
+                <span className={styles.countdown}>2:00 PM</span>
             </>
         );
     }

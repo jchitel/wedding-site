@@ -1,5 +1,5 @@
-require('antd/lib/style');
-import React = require('react');
+import 'antd/lib/style';
+import React from 'react';
 import { render } from 'react-dom';
 import App from './components/app';
 

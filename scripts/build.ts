@@ -1,15 +1,17 @@
-import Bundler = require('parcel-bundler');
+import webpack from 'webpack';
 import fs = require('fs-extra');
 import path = require('path');
 import archiver = require('archiver');
 import { execSync } from 'child_process';
+import config from '../webpack.config';
 
 
-async function bundle(entry: string, outDir: string, target?: 'node') {
-    console.log(`Compiling ${entry}...`);
-    const bundler = new Bundler(entry, { outDir, target });
-    await bundler.bundle();
-    console.log(`Bundled successfully to ${outDir}\n`);
+async function bundle() {
+    console.log(`Compiling ${config.entry}...`);
+    const mode = process.env.NODE_ENV as webpack.Configuration['mode'] || 'development';
+    const compiler = webpack({ ...config, mode, context: process.cwd() });
+    const stats = await new Promise<webpack.Stats>((resolve, reject) => compiler.run((err, stats) => err ? reject(err) : resolve(stats)));
+    console.log(`Bundled successfully to ${config.output.path}\n`);
 }
 
 async function zipDirectory(dir: string, target: string) {
@@ -31,16 +33,13 @@ function installLambdaDependencies(dir: string) {
 
 (async () => {
     const build = path.join(__dirname, '..', 'build');
+    const production = process.argv[2] === '--prod';
 
     // bundle site
-    await bundle('./src/site/index.tsx', path.join(build, 'bundle'));
-    // copy image files
-    console.log('Copying images...');
-    fs.copySync(path.join(__dirname, '..', 'src/site/images'), path.join(build, 'site/images'), { recursive: true });
-    console.log('Images copied.\n');
+    await bundle();
 
     // deploy mode
-    if (process.env.NODE_ENV === 'production') {
+    if (production) {
         console.log('Setting up deployment package...');
         // set up lambda dependencies	
         installLambdaDependencies(build);

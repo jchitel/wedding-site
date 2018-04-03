@@ -1,8 +1,4 @@
 Error.stackTraceLimit = Infinity;
-import * as tsNode from 'ts-node';
-// register ts-node
-tsNode.register({ project: `${__dirname}/tsconfig.json`, skipIgnore: true } as any);
-
 import serverless from 'serverless-http';
 import app from './server';
 
