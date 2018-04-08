@@ -4,6 +4,8 @@ import * as lambda from 'aws-lambda';
 import app from './server';
 
 
+process.env.SERVER_ENV = 'lambda';
+
 /** export lambda hander wrapped around express app */
 const server = serverless.createServer(app, undefined, ['image/png', 'image/jpeg', 'application/x-font-ttf']);
 export const handler: lambda.APIGatewayProxyHandler = (event, context) => {
