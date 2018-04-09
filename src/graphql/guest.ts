@@ -1,3 +1,8 @@
+import { IFieldResolver } from "graphql-tools";
+import { IWeddingSiteContext } from "./schema";
+import { Invitation } from "../data/invitation";
+import GuestClient, { Guest } from "../data/guest";
+
 export const typeDef = `
 # A single guest record.
 # This can be retrieved only from an Invitation.
@@ -5,7 +10,7 @@ export const typeDef = `
 # If 'givenPlusOne' is true, then the plus one record will be present.
 type Guest {
     # Unique id given to each guest
-    guestId: String!
+    guestId: Int!
     # First name of guest (properly cased)
     firstName: String!
     # Last name of guest (properly cased)
@@ -20,10 +25,12 @@ type Guest {
     whoseGuest: GuestOwner!
     # Label for the type of guest
     guestType: GuestType!
-    # Last updated timestamp (just by the user, admin updates will have no effect on this)
-    lastUpdatedByUser: String!
-    # Last updated by admin timestamp (user updates will have no effect on this)
-    lastUpdatedByAdmin: String!
+    # Last updated guest name (admin updated will have no effect on this)
+    lastUpdatedByGuest: String!
+    # Last updated timestamp (just by the guest, admin updates will have no effect on this)
+    lastUpdatedByGuestTimestamp: String!
+    # Last updated by admin timestamp (guest updates will have no effect on this)
+    lastUpdatedByAdminTimestamp: String!
 }
 
 # A guest's plus one, only if they were given one
@@ -88,3 +95,11 @@ export const GuestType = {
     FRIEND: 'friend',
     PARTY: 'party'
 };
+
+export const invitationGuests: IFieldResolver<Invitation, IWeddingSiteContext> = async (source, _args, context) => {
+    const invitationId = source.invitationId;
+    const guestClient = new GuestClient(context.client);
+    const guests = await guestClient.queryByInvitationId(invitationId);
+    // types are exactly the same because there are no extra sub-collections
+    return guests as Guest[];
+}

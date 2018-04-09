@@ -1,6 +1,9 @@
 import { invitationGuests } from './guest';
 import { IFieldResolver } from 'graphql-tools';
 import { IWeddingSiteContext } from './schema';
+import { ErrorCode } from '../shared';
+import AuthClient from '../data/auth';
+import InvitationClient from '../data/invitation';
 
 export const typeDef = `
 # The collection of guests on a single invitation.
@@ -8,9 +11,9 @@ export const typeDef = `
 # and the house number from the address.
 type Invitation {
     # Unique id given to each invitation
-    invitationId: String!
+    invitationId: Int!
     # Address info for invitation
-    address: Address
+    address: Address!
     # List of guests on invitation
     guests: [Guest]!
 }
@@ -38,6 +41,14 @@ export const Invitation = {
 
 // rootInvitation, allInvitations, byInvitationId, byNameAndHouseNumber
 
-export const rootInvitation: IFieldResolver<{}, IWeddingSiteContext> = (source, args, context) => {
-    
+export const rootInvitation: IFieldResolver<{}, IWeddingSiteContext> = async (_source, _args, context) => {
+    // verify guest auth
+    const authClient = new AuthClient(context.client);
+    const claims = authClient.authorize(context.token);
+    // admin cannot get an invitation based on current authentication
+    if (claims.isAdmin) throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_AUTHORIZED }));
+
+    // retrieve invitation
+    const invitationClient = new InvitationClient(context.client);
+    return invitationClient.queryById(claims.invitationId!);
 }

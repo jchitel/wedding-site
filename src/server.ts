@@ -18,7 +18,7 @@ const getClient = () => _client || (_client = new SqlClient(createPool()));
 
 // graphql endpoint
 app.use('/graphql', graphqlHttp(request => {
-    const token = ((/Bearer (\S+)/i).exec(request.get('authorization') || '') || [])[1] || '';
+    const token = ((/Bearer (\S+)/i).exec(request.get('authorization') || '') || [])[1] || null;
 
     return {
         schema,

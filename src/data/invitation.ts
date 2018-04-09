@@ -1,23 +1,9 @@
 import SqlClient from './sql-client';
 
-
-export interface InvitationClient {
-    /** Get the full list of all invitation records */
-    queryAll(): Promise<Invitation[]>;
-    /** Get a single invitation by id */
-    queryById(id: string): Promise<Invitation>;
-    /** Search for an invitation by name and house number. May return 0 or more than 1, so it returns a list */
-    queryByNameAndHouseNumber(name: string, houseNumber: string): Promise<Invitation[]>;
-}
-
 export interface Invitation {
-    invitationId: string;
-    houseNumber: string;
-    streetAddress: string;
-    aptNumber: string | null;
-    city: string;
-    state: string;
-    zip: string;
+    invitationId: number;
+    invitationName: string;
+    address: Address;
 }
 
 export interface Address {
@@ -29,12 +15,13 @@ export interface Address {
     zip: string;
 }
 
-export class SqlInvitationClient implements InvitationClient {
+export default class InvitationClient {
     constructor(private sqlClient: SqlClient) {}
 
     async queryAll(): Promise<Invitation[]> {
         const { rows } = await this.sqlClient.query(`
             select i.invitation_id,
+                   i.invitation_name,
                    i.house_number,
                    i.street_address,
                    i.apt_number,
@@ -46,9 +33,10 @@ export class SqlInvitationClient implements InvitationClient {
         return rows.map(this.dbToBo);
     }
 
-    async queryById(id: string): Promise<Invitation> {
+    async queryById(id: number): Promise<Invitation> {
         const { rows: [row] } = await this.sqlClient.query(`
             select i.invitation_id,
+                   i.invitation_name,
                    i.house_number,
                    i.street_address,
                    i.apt_number,
@@ -62,9 +50,12 @@ export class SqlInvitationClient implements InvitationClient {
     }
 
     async queryByNameAndHouseNumber(name: string, houseNumber: string): Promise<Invitation[]> {
+        // match the house number against the invitation record,
+        // and the name against any of the names for any guest on the invitation
         const { rows } = await this.sqlClient.query(`
             select distinct on (i.invitation_id)
                    i.invitation_id,
+                   i.invitation_name,
                    i.house_number,
                    i.street_address,
                    i.apt_number,
@@ -73,21 +64,23 @@ export class SqlInvitationClient implements InvitationClient {
                    i.zip
             from invitation i
             join guest g on i.invitation_id = g.invitation_id
+            join guest_name gn on g.guest_id = gn.guest_id
             where i.house_number = $2
-              and (lower(g.first_name) = trim(both from lower($1))
-                   or lower(g.last_name) = trim(both from lower($1))
-                   or lower(g.first_name || ' ' || g.last_name) = trim(both from lower($1)))
-        `, [name, houseNumber]);
+              and gn.search_name = $1
+        `, [name.toLowerCase().trim(), houseNumber]);
         return rows.map(this.dbToBo);
     }
 
     private readonly dbToBo = (_: any): Invitation => ({
         invitationId: _.invitation_id,
-        houseNumber: _.house_number,
-        streetAddress: _.street_address,
-        aptNumber: _.apt_number || null,
-        city: _.city,
-        state: _.state,
-        zip: _.zip
+        invitationName: _.invitation_name,
+        address: {
+            houseNumber: _.house_number,
+            streetAddress: _.street_address,
+            aptNumber: _.apt_number || null,
+            city: _.city,
+            state: _.state,
+            zip: _.zip
+        }
     });
 }
