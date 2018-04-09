@@ -33,7 +33,7 @@ export default class InvitationClient {
         return rows.map(this.dbToBo);
     }
 
-    async queryById(id: number): Promise<Invitation> {
+    async queryById(id: number): Promise<Invitation | null> {
         const { rows: [row] } = await this.sqlClient.query(`
             select i.invitation_id,
                    i.invitation_name,
@@ -46,7 +46,7 @@ export default class InvitationClient {
             from invitation i
             where i.invitation_id = $1
         `, [id]);
-        return this.dbToBo(row);
+        return row ? this.dbToBo(row) : null;
     }
 
     async queryByNameAndHouseNumber(name: string, houseNumber: string): Promise<Invitation[]> {

@@ -8,7 +8,7 @@ export const typeDef = `
 type Query {
     # Using a name (any combination of first and last name, case insensitive)
     # and a house number (must exactly match the house number from the invite)
-    # authenticate the guest and return the corresponding RSVP.
+    # authenticate the user and return a JWT for use in subsequent requests.
     authenticate(name: String, houseNumber: String): String
 
     # Retrieve a user's RSVP according to current authorization.
@@ -22,7 +22,7 @@ type Query {
     # Retrieve a specific rsvp by invitation id.
     # This will throw an error for a non-existent invitation.
     # ADMIN ONLY
-    rsvpByInvitationId(invitationId: String): Invitation!
+    rsvpByInvitationId(invitationId: Int): Invitation!
 
     # Look up a specific invitation by name and house number.
     # This will return null for an invalid lookup.
