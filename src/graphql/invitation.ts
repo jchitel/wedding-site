@@ -3,7 +3,7 @@ import { IFieldResolver } from 'graphql-tools';
 import { IWeddingSiteContext } from './schema';
 import { ErrorCode } from '../shared';
 import AuthClient from '../data/auth';
-import InvitationClient from '../data/invitation';
+import InvitationClient, { Invitation as IInvitation } from '../data/invitation';
 
 export const typeDef = `
 # The collection of guests on a single invitation.
@@ -42,9 +42,7 @@ export const Invitation = {
 export const rootInvitation: IFieldResolver<{}, IWeddingSiteContext> = async (_source, _args, context) => {
     // verify guest auth
     const authClient = new AuthClient(context.client);
-    const claims = authClient.authorize(context.token);
-    // admin cannot get an invitation because there is not a 1:1 relationship for the admin user
-    if (claims.isAdmin) throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_AUTHORIZED }));
+    const claims = authClient.authorizeGuest(context.token);
 
     // retrieve invitation
     const invitationClient = new InvitationClient(context.client);
@@ -54,9 +52,7 @@ export const rootInvitation: IFieldResolver<{}, IWeddingSiteContext> = async (_s
 export const allInvitations: IFieldResolver<{}, IWeddingSiteContext> = async (_source, _args, context) => {
     // verify admin auth
     const authClient = new AuthClient(context.client);
-    const claims = authClient.authorize(context.token);
-    // guest does not have access to all invites
-    if (!claims.isAdmin) throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_AUTHORIZED }));
+    authClient.authorizeAdmin(context.token);
 
     // retrieve invitations
     const invitationClient = new InvitationClient(context.client);
@@ -66,9 +62,7 @@ export const allInvitations: IFieldResolver<{}, IWeddingSiteContext> = async (_s
 export const byInvitationId: IFieldResolver<{}, IWeddingSiteContext> = async (_source, args, context) => {
     // verify admin auth
     const authClient = new AuthClient(context.client);
-    const claims = authClient.authorize(context.token);
-    // guest cannot request specific invites
-    if (!claims.isAdmin) throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_AUTHORIZED }));
+    authClient.authorizeAdmin(context.token);
 
     // retrieve invitation
     const invitationClient = new InvitationClient(context.client);
@@ -80,9 +74,7 @@ export const byInvitationId: IFieldResolver<{}, IWeddingSiteContext> = async (_s
 export const byNameAndHouseNumber: IFieldResolver<{}, IWeddingSiteContext> = async (_source, args, context) => {
     // verify admin auth
     const authClient = new AuthClient(context.client);
-    const claims = authClient.authorize(context.token);
-    // guest cannot request specific invites
-    if (!claims.isAdmin) throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_AUTHORIZED }));
+    authClient.authorizeAdmin(context.token);
 
     // retrieve invitation
     const invitationClient = new InvitationClient(context.client);
@@ -93,4 +85,59 @@ export const byNameAndHouseNumber: IFieldResolver<{}, IWeddingSiteContext> = asy
         throw new Error(JSON.stringify({ errorCode: ErrorCode.DUPLICATE_RECORDS_FOUND }));
     }
     return invitations[0];
+}
+
+export const addInvitation: IFieldResolver<{}, IWeddingSiteContext> = async (_source, args, context) => {
+    // verify admin auth
+    const authClient = new AuthClient(context.client);
+    authClient.authorizeAdmin(context.token);
+
+    // add dat invitation
+    const invitationClient = new InvitationClient(context.client);
+    const { invitationName, houseNumber, streetAddress, aptNumber, city, state, zip } = args;
+    const invitationId = await invitationClient.insertInvitation(
+        invitationName,
+        houseNumber,
+        streetAddress,
+        aptNumber,
+        city,
+        state,
+        zip
+    );
+    const invitation: IInvitation = {
+        invitationId,
+        invitationName,
+        address: { houseNumber, streetAddress, aptNumber, city, state, zip }
+    };
+    return { invitation };
+}
+
+export const editInvitation: IFieldResolver<{}, IWeddingSiteContext> = async (_source, args, context) => {
+    // verify admin auth
+    const authClient = new AuthClient(context.client);
+    authClient.authorizeAdmin(context.token);
+
+    // edit dat invitation
+    const invitationClient = new InvitationClient(context.client);
+    const { invitationId, invitationName, houseNumber, streetAddress, aptNumber, city, state, zip } = args;
+    return invitationClient.updateInvitation(
+        invitationId,
+        invitationName,
+        houseNumber,
+        streetAddress,
+        aptNumber,
+        city,
+        state,
+        zip
+    );
+}
+
+export const deleteInvitation: IFieldResolver<{}, IWeddingSiteContext> = async (_source, args, context) => {
+    // verify admin auth
+    const authClient = new AuthClient(context.client);
+    authClient.authorizeAdmin(context.token);
+
+    // delete dat invitation
+    const invitationClient = new InvitationClient(context.client);
+    return invitationClient.deleteInvitation(args.invitationId);
 }

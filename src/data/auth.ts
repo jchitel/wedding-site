@@ -92,4 +92,16 @@ export default class AuthClient {
             throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_AUTHORIZED }));
         }
     }
+
+    authorizeAdmin(token: string): Claims {
+        const claims = this.authorize(token);
+        if (!claims.isAdmin) throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_AUTHORIZED }));
+        return claims;
+    }
+
+    authorizeGuest(token: string): Claims {
+        const claims = this.authorize(token);
+        if (claims.isAdmin) throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_AUTHORIZED }));
+        return claims;
+    }
 }

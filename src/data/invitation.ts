@@ -71,6 +71,58 @@ export default class InvitationClient {
         return rows.map(this.dbToBo);
     }
 
+    async insertInvitation(name: string, houseNumber: string, streetAddress: string, aptNumber: string | undefined, city: string, state: string, zip: string) {
+        const { rows } = await this.sqlClient.query(`
+            insert into invitation
+            (invitation_name, house_number, street_address, apt_number, city, state, zip)
+            values
+            ($1, $2, $3, $4, $5, $6, $7)
+            returning invitation_id
+        `, [name, houseNumber, streetAddress, aptNumber || null, city, state, zip]);
+        return rows[0].invitation_id as number;
+    }
+
+    async updateInvitation(invitationId: number, invitationName: string, houseNumber: string, streetAddress: string, aptNumber: string | undefined, city: string, state: string, zip: string) {
+        const { rows } = await this.sqlClient.query(`
+            update invitation set
+                invitation_name = coalesce($2, invitation_name),
+                house_number = coalesce($3, house_number),
+                street_address = coalesce($4, street_address),
+                apt_number = coalesce($5, apt_number),
+                city = coalesce($6, city),
+                state = coalesce($7, state),
+                zip = coalesce($8, zip)
+            where invitation_id = $1
+            returning
+                invitation_id,
+                invitation_name,
+                house_number,
+                street_address,
+                apt_number,
+                city,
+                state,
+                zip
+        `, [invitationId, invitationName, houseNumber, streetAddress, aptNumber, city, state, zip]);
+        return this.dbToBo(rows[0]);
+    }
+
+    async deleteInvitation(invitationId: number) {
+        const { rows } = await this.sqlClient.query(`
+            delete from invitation
+            where invitation_id = $1
+            returning
+                invitation_id,
+                invitation_name,
+                house_number,
+                street_address,
+                apt_number,
+                city,
+                state,
+                zip
+        `, [invitationId]);
+        return this.dbToBo(rows[0]);
+    }
+
     private readonly dbToBo = (_: any): Invitation => ({
         invitationId: _.invitation_id,
         invitationName: _.invitation_name,

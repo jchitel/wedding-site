@@ -29,9 +29,7 @@ type InvitationStats {
 export const guestRsvpStats: IFieldResolver<{}, IWeddingSiteContext> = async (_source, args, context) => {
     // verify admin auth
     const authClient = new AuthClient(context.client);
-    const claims = authClient.authorize(context.token);
-    // only admin can view stats
-    if (!claims.isAdmin) throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_AUTHORIZED }));
+    authClient.authorizeAdmin(context.token);
 
     // request stats
     const statsClient = new StatsClient(context.client);
@@ -41,9 +39,7 @@ export const guestRsvpStats: IFieldResolver<{}, IWeddingSiteContext> = async (_s
 export const invitationStats: IFieldResolver<{}, IWeddingSiteContext> = async (_source, _args, context) => {
     // verify admin auth
     const authClient = new AuthClient(context.client);
-    const claims = authClient.authorize(context.token);
-    // only admin can view stats
-    if (!claims.isAdmin) throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_AUTHORIZED }));
+    authClient.authorizeAdmin(context.token);
 
     // request stats
     const statsClient = new StatsClient(context.client);

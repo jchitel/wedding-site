@@ -1,4 +1,4 @@
-import { Pool, PoolClient } from 'pg';
+import { Pool, PoolClient, QueryResult } from 'pg';
 
 
 export const createPool = () => new Pool({
@@ -29,7 +29,7 @@ export default class SqlClient {
         }
     }
 
-    async transaction<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {
+    async transaction(fn: (client: PoolClient) => Promise<QueryResult>): Promise<QueryResult> {
         const client = await this.pool.connect();
         try {
             await client.query('BEGIN');

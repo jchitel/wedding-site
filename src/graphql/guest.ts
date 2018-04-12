@@ -1,7 +1,8 @@
 import { IFieldResolver } from "graphql-tools";
 import { IWeddingSiteContext } from "./schema";
 import { Invitation } from "../data/invitation";
-import GuestClient, { Guest } from "../data/guest";
+import GuestClient, { Guest as IGuest } from "../data/guest";
+import AuthClient from "../data/auth";
 
 export const typeDef = `
 # A single guest record.
@@ -15,6 +16,8 @@ type Guest {
     firstName: String!
     # Last name of guest (properly cased)
     lastName: String!
+    # Nicknames
+    nickNames: [String!]!
     # Current RSVP status of this guest
     status: RsvpStatus!
     # Whether this guest was given a plus one
@@ -99,7 +102,123 @@ export const GuestType = {
 export const invitationGuests: IFieldResolver<Invitation, IWeddingSiteContext> = async (source, _args, context) => {
     const invitationId = source.invitationId;
     const guestClient = new GuestClient(context.client);
-    const guests = await guestClient.queryByInvitationId(invitationId);
-    // types are exactly the same because there are no extra sub-collections
-    return guests as Guest[];
+    return guestClient.queryByInvitationId(invitationId);
 }
+
+export const nicknames: IFieldResolver<IGuest, IWeddingSiteContext> = async (source, _args, context) => {
+    const guestId = source.guestId;
+    const guestClient = new GuestClient(context.client);
+    return guestClient.queryGuestNicknames(guestId);
+}
+
+export const setRsvpStatus: IFieldResolver<{}, IWeddingSiteContext> = async (_source, args, context) => {
+    // any user can set rsvp status as long as they are authorized
+    const authClient = new AuthClient(context.client);
+    const claims = authClient.authorize(context.token);
+
+    // set dat status
+    const guestClient = new GuestClient(context.client);
+    return claims.isAdmin
+        ? guestClient.updateRsvpStatusAdmin(args.guestId, args.status)
+        : guestClient.updateRsvpStatusGuest(args.guestId, args.status, claims.name);
+}
+
+export const setPlusOneStatus: IFieldResolver<{}, IWeddingSiteContext> = async (_source, args, context) => {
+    // any user can set plus one status as long as they are authorized
+    const authClient = new AuthClient(context.client);
+    const claims = authClient.authorize(context.token);
+
+    // set dat plus one status
+    const guestClient = new GuestClient(context.client);
+    return claims.isAdmin
+        ? guestClient.updatePlusOneStatusAdmin(args.guestId, args.taking, args.firstName, args.lastName)
+        : guestClient.updatePlusOneStatusGuest(args.guestId, args.taking, args.firstName, args.lastName, claims.name);
+}
+
+export const addGuest: IFieldResolver<{}, IWeddingSiteContext> = async (_source, args, context) => {
+    // only admin can add guests
+    const authClient = new AuthClient(context.client);
+    authClient.authorizeAdmin(context.token);
+
+    // add dat guest
+    const guestClient = new GuestClient(context.client);
+    const { invitationId, firstName, lastName, plusOne, owner, type } = args;
+    const guest = guestClient.insertGuest(invitationId, firstName, lastName, plusOne, owner, type);
+    return { guest };
+}
+
+export const editGuest: IFieldResolver<{}, IWeddingSiteContext> = async (_source, args, context) => {
+    // only admin can edit guests
+    const authClient = new AuthClient(context.client);
+    authClient.authorizeAdmin(context.token);
+
+    // edit dat guest
+    const guestClient = new GuestClient(context.client);
+    const { guestId, firstName, lastName, plusOne, owner, type } = args;
+    const guest = guestClient.updateGuest(guestId, firstName, lastName, plusOne, owner, type);
+    return { guest };
+}
+
+export const deleteGuest: IFieldResolver<{}, IWeddingSiteContext> = async (_source, args, context) => {
+    // only admin can delete guests
+    const authClient = new AuthClient(context.client);
+    authClient.authorizeAdmin(context.token);
+
+    // delete dat guest
+    const guestClient = new GuestClient(context.client);
+    return guestClient.deleteGuest(args.guestId);
+}
+
+export const addNickname: IFieldResolver<{}, IWeddingSiteContext> = async (_source, args, context) => {
+    // only admin can add nicknames
+    const authClient = new AuthClient(context.client);
+    authClient.authorizeAdmin(context.token);
+
+    // add dat nickname
+    const guestClient = new GuestClient(context.client);
+    await guestClient.insertNickname(args.guestId, args.name);
+    return args.name as string;
+}
+
+export const removeNickname: IFieldResolver<{}, IWeddingSiteContext> = async (_source, args, context) => {
+    // only admin can remove nicknames
+    const authClient = new AuthClient(context.client);
+    authClient.authorizeAdmin(context.token);
+
+    // remove dat nickname
+    const guestClient = new GuestClient(context.client);
+    await guestClient.deleteNickname(args.guestId, args.name);
+    return args.name as string;
+}
+
+export const addGuestToInvitation: IFieldResolver<Invitation, IWeddingSiteContext> = async (source, args, context) => {
+    // add dat guest
+    const guestClient = new GuestClient(context.client);
+    const { firstName, lastName, plusOne, owner, type } = args;
+    const guest = guestClient.insertGuest(source.invitationId, firstName, lastName, plusOne, owner, type);
+    return { guest };
+}
+
+export const removeGuestFromInvitation: IFieldResolver<Invitation, IWeddingSiteContext> = async (_source, args, context) => {
+    // remove dat guest
+    const guestClient = new GuestClient(context.client);
+    return guestClient.deleteGuest(args.guestId);
+}
+
+export const addNicknameToGuest: IFieldResolver<IGuest, IWeddingSiteContext> = async (source, args, context) => {
+    // add dat nickname
+    const guestClient = new GuestClient(context.client);
+    await guestClient.insertNickname(source.guestId, args.name);
+    return args.name;
+}
+
+export const removeNicknameFromGuest: IFieldResolver<IGuest, IWeddingSiteContext> = async (source, args, context) => {
+    // remove dat nickname
+    const guestClient = new GuestClient(context.client);
+    guestClient.deleteNickname(source.guestId, args.name);
+    return args.name;
+}
+
+export const Guest = {
+    nicknames
+};
