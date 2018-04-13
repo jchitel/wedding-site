@@ -15,8 +15,8 @@ export interface Guest {
     plusOne: PlusOne | null;
     whoseGuest: GuestOwner;
     guestType: GuestType;
-    lastUpdatedByGuest: string;
-    lastUpdatedByGuestTimestamp: string;
+    lastUpdatedByGuest: string | null;
+    lastUpdatedByGuestTimestamp: string | null;
     lastUpdatedByAdminTimestamp: string;
 }
 
@@ -35,7 +35,7 @@ export default class GuestClient {
                    fn.display_name as first_name,
                    ln.display_name as last_name,
                    g.status,
-                   exists(p.plus_one_id) as given_plus_one,
+                   (case when p.plus_one_id is null then false else true end) as given_plus_one,
                    p.taken as plus_one_taken,
                    p.first_name as plus_one_first_name,
                    p.last_name as plus_one_last_name,
@@ -45,8 +45,8 @@ export default class GuestClient {
                    g.last_updated_by_guest_timestamp,
                    g.last_updated_by_admin_timestamp
             from guest g
-                 join guest_name fn on g.guest_id = fn.guest_id and fn.guest_name_type = 'given_name'
-                 join guest_name ln on g.guest_id = ln.guest_id and ln.guest_name_type = 'last_name'
+                 join guest_name fn on g.guest_id = fn.guest_id and fn.type = 'given_name'
+                 join guest_name ln on g.guest_id = ln.guest_id and ln.type = 'last_name'
                  left join plus_one p on p.guest_id = g.guest_id
             where g.invitation_id = $1
         `, [invitationId]);
@@ -69,7 +69,7 @@ export default class GuestClient {
             await client.query(`
                 update guest
                 set status = $2,
-                    last_updated_by_admin = $3
+                    last_updated_by_admin_timestamp = $3
                 where guest_id = $1
             `, [guestId, status, new Date()]);
             // query guest
@@ -99,7 +99,7 @@ export default class GuestClient {
             // update plus one
             await client.query(`
                 update plus_one set
-                    taking = $2,
+                    taken = $2,
                     first_name = $3,
                     last_name = $4
                 where guest_id = $1
@@ -121,7 +121,7 @@ export default class GuestClient {
             // update plus one
             await client.query(`
                 update plus_one set
-                    taking = $2,
+                    taken = $2,
                     first_name = $3,
                     last_name = $4
                 where guest_id = $1
@@ -144,7 +144,7 @@ export default class GuestClient {
             // insert guest record
             const { rows: [{ guest_id: guestId }] } = await client.query(`
                 insert into guest
-                (invitation_id, status, owner, type, last_updated_by_admin)
+                (invitation_id, status, owner, type, last_updated_by_admin_timestamp)
                 values
                 ($1, 'no_rsvp', $2, $3, $4)
                 returning guest_id
@@ -180,7 +180,7 @@ export default class GuestClient {
                 update guest set
                     owner = coalesce($2, owner),
                     type = coalesce($3, type),
-                    last_updated_by_admin = $4
+                    last_updated_by_admin_timestamp = $4
                 where guest_id = $1
             `, [guestId, owner, type, new Date()]);
             // query existing guest record
@@ -207,7 +207,7 @@ export default class GuestClient {
                 update guest_name
                 set display_name = $2,
                     search_name = $3
-                where guest_id = $1 and type = 'first_name'
+                where guest_id = $1 and type = 'given_name'
             `, [guestId, _firstName, _firstName.toLowerCase()]);
             // update last name
             await client.query(`
@@ -233,11 +233,6 @@ export default class GuestClient {
         const { rows } = await this.sqlClient.transaction(async client => {
             // query existing guest before deletion
             const result = await this._byGuestId(client, guestId);
-            // delete guest record
-            await client.query(`
-                delete from guest
-                where guest_id = $1
-            `, [guestId]);
             // delete plus one record
             await client.query(`
                 delete from plus_one
@@ -246,6 +241,11 @@ export default class GuestClient {
             // delete name records
             await client.query(`
                 delete from guest_name
+                where guest_id = $1
+            `, [guestId]);
+            // delete guest record
+            await client.query(`
+                delete from guest
                 where guest_id = $1
             `, [guestId]);
             // return existing guest
@@ -277,7 +277,7 @@ export default class GuestClient {
                 fn.display_name as first_name,
                 ln.display_name as last_name,
                 g.status,
-                exists(p.plus_one_id) as given_plus_one,
+                (case when p.plus_one_id is null then false else true end) as given_plus_one,
                 p.taken as plus_one_taken,
                 p.first_name as plus_one_first_name,
                 p.last_name as plus_one_last_name,
@@ -287,8 +287,8 @@ export default class GuestClient {
                 g.last_updated_by_guest_timestamp,
                 g.last_updated_by_admin_timestamp
             from guest g
-                join guest_name fn on g.guest_id = fn.guest_id and fn.guest_name_type = 'given_name'
-                join guest_name ln on g.guest_id = ln.guest_id and ln.guest_name_type = 'last_name'
+                join guest_name fn on g.guest_id = fn.guest_id and fn.type = 'given_name'
+                join guest_name ln on g.guest_id = ln.guest_id and ln.type = 'last_name'
                 left join plus_one p on p.guest_id = g.guest_id
             where g.guest_id = $1
         `, [guestId]);

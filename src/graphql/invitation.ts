@@ -12,6 +12,8 @@ export const typeDef = `
 type Invitation {
     # Unique id given to each invitation
     invitationId: Int!
+    # Display name of the invitation
+    invitationName: String!
     # Address info for invitation
     address: Address!
     # List of guests on invitation
@@ -120,7 +122,7 @@ export const editInvitation: IFieldResolver<{}, IWeddingSiteContext> = async (_s
     // edit dat invitation
     const invitationClient = new InvitationClient(context.client);
     const { invitationId, invitationName, houseNumber, streetAddress, aptNumber, city, state, zip } = args;
-    return invitationClient.updateInvitation(
+    const invitation = await invitationClient.updateInvitation(
         invitationId,
         invitationName,
         houseNumber,
@@ -130,6 +132,7 @@ export const editInvitation: IFieldResolver<{}, IWeddingSiteContext> = async (_s
         state,
         zip
     );
+    return { invitation };
 }
 
 export const deleteInvitation: IFieldResolver<{}, IWeddingSiteContext> = async (_source, args, context) => {

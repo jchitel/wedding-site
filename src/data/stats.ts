@@ -34,14 +34,16 @@ export default class StatsClient {
         const { rows } = await this.sqlClient.query(`
             select count(*) as num
             from guest
-            where not exists($1) or status = $1
-              and not exists($2) or owner = $2
-              and not exists($3) or type = $3
-              and 
+            where (status = $1 or $1 is null)
+              and (owner = $2 or $2 is null)
+              and (type = $3 or $3 is null)
         `, [status || null, owner || null, type || null]);
         return rows[0].num as number;
     }
 
+    /**
+     * TODO: this apparently needs work
+     */
     private async querySinglePlusOneRsvpStat(
         status: GuestStatus | undefined,
         owner: GuestOwner | undefined,
@@ -51,9 +53,9 @@ export default class StatsClient {
             select count(*) as num
             from plus_one p
             join guest g on p.guest_id = g.guest_id
-            where not exists($1) or g.status = $1
-              and not exists($2) or owner = $2
-              and not exists($3) or type = $3
+            where (g.status = $1 or $1 is null)
+              and (g.owner = $2 or $2 is null)
+              and (g.type = $3 or $3 is null)
         `, [status || null, owner || null, type || null]);
         return rows[0].num as number;
     }

@@ -8,10 +8,10 @@ import SqlClient, { createPool } from './data/sql-client';
 const app = express();
 
 // static files
-const parts = process.env.SERVER_ENV === 'lambda'
-    ? [__dirname, 'bundle']
-    : [__dirname, '..', 'build', 'bundle'];
-app.use(express.static(path.resolve(...parts)));
+const staticRoot = process.env.SERVER_ENV === 'lambda'
+    ? __dirname
+    : path.resolve(__dirname, '..', 'build');
+app.use(express.static(path.resolve(staticRoot, 'bundle')));
 
 let _client: SqlClient;
 const getClient = () => _client || (_client = new SqlClient(createPool()));
@@ -28,6 +28,11 @@ app.use('/graphql', graphqlHttp(request => {
             client: getClient()
         } as IWeddingSiteContext
     };
-}))
+}));
+
+if (process.env.SERVER_ENV === 'local') {
+    // graphiql page
+    app.use('/graphiql', express.static(path.resolve(staticRoot, 'graphiql')));
+}
 
 export default app;

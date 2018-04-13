@@ -9,7 +9,7 @@ type Query {
     # Using a name (any combination of first and last name, case insensitive)
     # and a house number (must exactly match the house number from the invite)
     # authenticate the user and return a JWT for use in subsequent requests.
-    authenticate(name: String, houseNumber: String): String
+    authenticate(name: String!, houseNumber: String!): String!
 
     # Retrieve a user's RSVP according to current authorization.
     # Admin authorization will throw an error.
@@ -17,17 +17,17 @@ type Query {
 
     # Retrieve all rsvps.
     # ADMIN ONLY
-    rsvps: [Invitation]
+    rsvps: [Invitation!]!
 
     # Retrieve a specific rsvp by invitation id.
     # This will throw an error for a non-existent invitation.
     # ADMIN ONLY
-    rsvpByInvitationId(invitationId: Int): Invitation!
+    rsvpByInvitationId(invitationId: Int!): Invitation!
 
     # Look up a specific invitation by name and house number.
     # This will return null for an invalid lookup.
     # ADMIN ONLY
-    rsvpByNameAndHouseNumber(name: String, houseNumber: String): Invitation
+    rsvpByNameAndHouseNumber(name: String!, houseNumber: String!): Invitation!
 
     # Retrieve full guest RSVP statistics.
     # If 'owner' is provided, only that owner's guests will be retrieved.
@@ -36,7 +36,7 @@ type Query {
     # If 'plusOnes' is set to false, only real guests stats will be retrieved.
     # If 'plusOnes' is omitted, stats for all guests and plus ones will be retrieved.
     # ADMIN ONLY
-    guestRsvpStats(owner: GuestOwner!, type: GuestType!, plusOnes: Boolean!): GuestRsvpStats!
+    guestRsvpStats(owner: GuestOwner, type: GuestType, plusOnes: Boolean): GuestRsvpStats!
 
     # Retrieve invitation-level statistics.
     # ADMIN ONLY
@@ -45,7 +45,7 @@ type Query {
 `;
 
 export const Query = {
-    authentication: rootAuth,
+    authenticate: rootAuth,
     rsvp: rootInvitation,
     rsvps: allInvitations,
     rsvpByInvitationId: byInvitationId,

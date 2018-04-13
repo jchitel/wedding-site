@@ -88,20 +88,20 @@ export default class AuthClient {
                 isAdmin: payload.jmwr_is_admin as boolean,
                 invitationId: payload.jmwr_iid as number | undefined
             };
-        } catch {
-            throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_AUTHORIZED }));
+        } catch (err) {
+            throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_AUTHORIZED, error: err.toString() }));
         }
     }
 
     authorizeAdmin(token: string): Claims {
         const claims = this.authorize(token);
-        if (!claims.isAdmin) throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_AUTHORIZED }));
+        if (!claims.isAdmin) throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_AUTHORIZED, error: 'Not admin' }));
         return claims;
     }
 
     authorizeGuest(token: string): Claims {
         const claims = this.authorize(token);
-        if (claims.isAdmin) throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_AUTHORIZED }));
+        if (claims.isAdmin) throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_AUTHORIZED, error: 'Not guest' }));
         return claims;
     }
 }

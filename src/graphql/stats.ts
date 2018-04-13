@@ -1,7 +1,6 @@
 import { IFieldResolver } from "graphql-tools";
 import { IWeddingSiteContext } from "./schema";
 import AuthClient from "../data/auth";
-import { ErrorCode } from "../shared";
 import StatsClient from "../data/stats";
 
 export const typeDef = `
@@ -10,19 +9,19 @@ export const typeDef = `
 # the number attending and not attending from the number invited.
 type GuestRsvpStats {
     # Total invited
-    numInvited: Integer!
+    numInvited: Int!
     # Total attending
-    numAttending: Integer!
+    numAttending: Int!
     # Total not attending
-    numNotAttending: Integer!
+    numNotAttending: Int!
 }
 
 # Invitation-level statistics
 type InvitationStats {
     # Total number of invitations sent
-    numInvitations: Integer!
+    numInvitations: Int!
     # Total number of invitations with a response (including verbal or by mail)
-    numInvitationsResponded: Integer!
+    numInvitationsResponded: Int!
 }
 `;
 

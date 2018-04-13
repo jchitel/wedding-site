@@ -7,3 +7,10 @@ declare module '*.less' {
     const classes: any;
     export = classes;
 }
+
+declare module '*.css' {
+    const exp: {};
+    export = exp;
+}
+
+declare module 'graphiql';

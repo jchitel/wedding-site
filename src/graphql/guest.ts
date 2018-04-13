@@ -17,7 +17,7 @@ type Guest {
     # Last name of guest (properly cased)
     lastName: String!
     # Nicknames
-    nickNames: [String!]!
+    nicknames: [String!]!
     # Current RSVP status of this guest
     status: RsvpStatus!
     # Whether this guest was given a plus one
@@ -29,11 +29,11 @@ type Guest {
     # Label for the type of guest
     guestType: GuestType!
     # Last updated guest name (admin updated will have no effect on this)
-    lastUpdatedByGuest: String!
+    lastUpdatedByGuest: String
     # Last updated timestamp (just by the guest, admin updates will have no effect on this)
-    lastUpdatedByGuestTimestamp: String!
+    lastUpdatedByGuestTimestamp: String
     # Last updated by admin timestamp (guest updates will have no effect on this)
-    lastUpdatedByAdminTimestamp: String!
+    lastUpdatedByAdminTimestamp: String
 }
 
 # A guest's plus one, only if they were given one
@@ -143,7 +143,7 @@ export const addGuest: IFieldResolver<{}, IWeddingSiteContext> = async (_source,
     // add dat guest
     const guestClient = new GuestClient(context.client);
     const { invitationId, firstName, lastName, plusOne, owner, type } = args;
-    const guest = guestClient.insertGuest(invitationId, firstName, lastName, plusOne, owner, type);
+    const guest = await guestClient.insertGuest(invitationId, firstName, lastName, plusOne, owner, type);
     return { guest };
 }
 
@@ -155,7 +155,7 @@ export const editGuest: IFieldResolver<{}, IWeddingSiteContext> = async (_source
     // edit dat guest
     const guestClient = new GuestClient(context.client);
     const { guestId, firstName, lastName, plusOne, owner, type } = args;
-    const guest = guestClient.updateGuest(guestId, firstName, lastName, plusOne, owner, type);
+    const guest = await guestClient.updateGuest(guestId, firstName, lastName, plusOne, owner, type);
     return { guest };
 }
 
@@ -191,31 +191,31 @@ export const removeNickname: IFieldResolver<{}, IWeddingSiteContext> = async (_s
     return args.name as string;
 }
 
-export const addGuestToInvitation: IFieldResolver<Invitation, IWeddingSiteContext> = async (source, args, context) => {
+export const addGuestToInvitation: IFieldResolver<{ invitation: Invitation }, IWeddingSiteContext> = async (source, args, context) => {
     // add dat guest
     const guestClient = new GuestClient(context.client);
     const { firstName, lastName, plusOne, owner, type } = args;
-    const guest = guestClient.insertGuest(source.invitationId, firstName, lastName, plusOne, owner, type);
+    const guest = await guestClient.insertGuest(source.invitation.invitationId, firstName, lastName, plusOne, owner, type);
     return { guest };
 }
 
-export const removeGuestFromInvitation: IFieldResolver<Invitation, IWeddingSiteContext> = async (_source, args, context) => {
+export const removeGuestFromInvitation: IFieldResolver<{ invitation: Invitation }, IWeddingSiteContext> = async (_source, args, context) => {
     // remove dat guest
     const guestClient = new GuestClient(context.client);
     return guestClient.deleteGuest(args.guestId);
 }
 
-export const addNicknameToGuest: IFieldResolver<IGuest, IWeddingSiteContext> = async (source, args, context) => {
+export const addNicknameToGuest: IFieldResolver<{ guest: IGuest }, IWeddingSiteContext> = async (source, args, context) => {
     // add dat nickname
     const guestClient = new GuestClient(context.client);
-    await guestClient.insertNickname(source.guestId, args.name);
+    await guestClient.insertNickname(source.guest.guestId, args.name);
     return args.name;
 }
 
-export const removeNicknameFromGuest: IFieldResolver<IGuest, IWeddingSiteContext> = async (source, args, context) => {
+export const removeNicknameFromGuest: IFieldResolver<{ guest: IGuest }, IWeddingSiteContext> = async (source, args, context) => {
     // remove dat nickname
     const guestClient = new GuestClient(context.client);
-    guestClient.deleteNickname(source.guestId, args.name);
+    guestClient.deleteNickname(source.guest.guestId, args.name);
     return args.name;
 }
 
