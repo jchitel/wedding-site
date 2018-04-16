@@ -1,0 +1,28 @@
+{
+  "name": "wedding-site-shared",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Server/client shared code for my wedding website",
+  "main": "./build/index.js",
+  "typings": "./build/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "deploy": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jchitel/wedding-site.git"
+  },
+  "author": "jchitel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jchitel/wedding-site/issues"
+  },
+  "homepage": "https://github.com/jchitel/wedding-site/packages/wedding-site-shared#readme",
+  "devDependencies": {
+    "typescript": "^2.8.1"
+  },
+  "dependencies": {
+    "tslib": "^1.9.0"
+  }
+}

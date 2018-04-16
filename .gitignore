@@ -2,11 +2,8 @@
 node_modules/
 
 # Build target
-/build/**
-# Ignore package.json and yarn.lock
-!/build/package.json
-!/build/yarn.lock
-!/build/tsconfig.json
+build/
+/lambda_deploy
 
 # OSX files
 .DS_Store
@@ -16,3 +13,4 @@ node_modules/
 
 # Yarn error file
 yarn-error.log
+lerna-debug.log
