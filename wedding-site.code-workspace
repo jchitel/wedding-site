@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": "packages/wedding-site-client"
+		},
+		{
+			"path": "packages/wedding-site-server"
+		},
+		{
+			"path": "packages/wedding-site-graphiql"
+		},
+		{
+			"path": "packages/wedding-site-shared"
+		},
+		{
+			"path": "packages/wedding-site-deploy"
+		}
+	],
+	"settings": {
+		"typescript.tsdk": "wedding-site-client/node_modules/typescript/lib"
+	}
+}

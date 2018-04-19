@@ -1,3 +1,4 @@
+/// <reference path="../../typings/types.d.ts" />
 import * as React from 'react';
 import styles from '../styles/style.less';
 import Countdown from './countdown';

@@ -17,7 +17,7 @@ type Invitation {
     # Address info for invitation
     address: Address!
     # List of guests on invitation
-    guests: [Guest]!
+    guests: [Guest!]!
 }
 
 # An address for an invitation

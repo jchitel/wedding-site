@@ -11,3 +11,8 @@ export const enum ErrorCode {
     /** The requested query yielded duplicate records */
     DUPLICATE_RECORDS_FOUND
 }
+
+export const enum JwtClaims {
+    IsAdmin = 'jmwr_is_admin',
+    InvitationId = 'jmwr_iid'
+}

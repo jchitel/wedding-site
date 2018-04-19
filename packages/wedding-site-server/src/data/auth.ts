@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import SqlClient from './sql-client';
 import InvitationClient from './invitation';
-import { ErrorCode } from 'wedding-site-shared';
+import { ErrorCode, JwtClaims } from 'wedding-site-shared';
 
 
 const weddingDateSeconds = new Date('2018-06-23T00:00:00.000Z').getTime() / 1000;
@@ -40,7 +40,7 @@ export default class AuthClient {
         if (name === 'admin' && houseNumber === process.env.JWT_SECRET) {
             return jwt.sign({
                 name: 'admin',
-                jmwr_is_admin: true
+                [JwtClaims.IsAdmin]: true
             }, process.env.JWT_SECRET, {
                 ...jwtSignOptions,
                 subject: 'admin',
@@ -61,8 +61,8 @@ export default class AuthClient {
             const match = matches[0];
             return jwt.sign({
                 name: match.invitationName,
-                jmwr_is_admin: false,
-                jmwr_iid: match.invitationId
+                [JwtClaims.IsAdmin]: false,
+                [JwtClaims.InvitationId]: match.invitationId
             }, process.env.JWT_SECRET!, {
                 ...jwtSignOptions,
                 subject: match.invitationName,
@@ -85,8 +85,8 @@ export default class AuthClient {
             const payload = jwt.verify(token, process.env.JWT_SECRET!, jwtVerifyOptions) as any;
             return {
                 name: payload.name as string,
-                isAdmin: payload.jmwr_is_admin as boolean,
-                invitationId: payload.jmwr_iid as number | undefined
+                isAdmin: payload[JwtClaims.IsAdmin] as boolean,
+                invitationId: payload[JwtClaims.InvitationId] as number | undefined
             };
         } catch (err) {
             throw new Error(JSON.stringify({ errorCode: ErrorCode.NOT_AUTHORIZED, error: err.toString() }));
