@@ -21,11 +21,24 @@ module.exports = (env = {}, argv = {}) => ({
             exclude: /node_modules/
         }, {
             test: /\.less$/,
+            exclude: /node_modules/,
             use: ExtractTextPlugin.extract({
                 fallback: 'style-loader',
                 use: [{
                     loader: 'css-loader',
                     options: { sourceMap: true, modules: true }
+                }, {
+                    loader: 'less-loader'
+                }]
+            }),
+        }, {
+            test: /\.less$/,
+            include: /node_modules/,
+            use: ExtractTextPlugin.extract({
+                fallback: 'style-loader',
+                use: [{
+                    loader: 'css-loader',
+                    options: { sourceMap: true }
                 }, {
                     loader: 'less-loader'
                 }]

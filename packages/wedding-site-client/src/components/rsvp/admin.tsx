@@ -3,6 +3,7 @@ import { Button, Alert, Spin, Table, Modal, Input, Select, List, Checkbox, notif
 import { SelectValue } from 'antd/lib/select';
 import { ApolloFetch } from 'apollo-fetch';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import styles from './admin.less';
 
 
 /** Query ALL THE THINGS */
@@ -143,22 +144,158 @@ interface RsvpListProps {
     refresh: () => void;
 }
 
+interface RsvpListState {
+    showModal: boolean;
+    inviteToEdit: Invitation | null;
+    adding: boolean;
+}
+
 class InvitationTable extends Table<Invitation> {}
 class InvitationColumn extends Table.Column<Invitation> {}
 
-function RsvpList({ rsvps, fetch, refresh }: RsvpListProps) {
-    return (
-        <InvitationTable
-            dataSource={rsvps}
-            rowKey="invitationId"
-            expandedRowRender={_ => <GuestList guests={_.guests} fetch={fetch} refresh={refresh} />}
-            pagination={false}
-        >
-            <InvitationColumn title="Invite Name" dataIndex="invitationName" defaultSortOrder="ascend" />
-            <InvitationColumn title="House Number" dataIndex="address.houseNumber" />
-            <InvitationColumn title="Address" key="address" render={(_, i) => <Address address={i.address} />} />
-        </InvitationTable>
-    )
+class RsvpList extends React.PureComponent<RsvpListProps, RsvpListState> {
+    state: RsvpListState = { showModal: false, inviteToEdit: null, adding: false };
+
+    onManageClick = (invite: Invitation) => this.setState({ showModal: true, inviteToEdit: { ...invite }, adding: false });
+
+    openToAdd = () => this.setState({ showModal: true, inviteToEdit: this.getNewInvite(), adding: true });
+
+    closeModal = () => this.setState({ showModal: false, inviteToEdit: null });
+
+    getNewInvite = (): Invitation => ({
+        invitationId: -1,
+        invitationName: '',
+        guests: [],
+        address: {
+            houseNumber: '',
+            streetAddress: '',
+            aptNumber: null,
+            city: '',
+            state: '',
+            zip: ''
+        }
+    })
+
+    editInput = (key: keyof Invitation) => (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
+        inviteToEdit: {
+            ...this.state.inviteToEdit!,
+            [key]: event.currentTarget.value
+        }
+    });
+
+    editAddressInput = (key: keyof Address) => (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
+        inviteToEdit: {
+            ...this.state.inviteToEdit!,
+            address: {
+                ...this.state.inviteToEdit!.address,
+                [key]: event.currentTarget.value
+            }
+        }
+    });
+
+    handleError = (errors: any) => {
+        let message: string;
+        try {
+            message = JSON.parse(errors[0].message).message;
+        } catch {
+            message = `Something went wrong: "${errors[0].message}"`;
+        }
+        notification.error({
+            message: 'Error',
+            description: message,
+            duration: 0
+        });
+    }
+
+    addInvite = async () => {
+        const { invitationName, address: { houseNumber, streetAddress, aptNumber, city, state, zip } } = this.state.inviteToEdit!;
+        let response = await this.props.fetch({
+            query: `
+                mutation {
+                    addInvitation(invitationName: "${invitationName}", houseNumber: "${houseNumber}", streetAddress: "${streetAddress}", aptNumber: "${aptNumber || ''}", city: "${city}", state: "${state}", zip: "${zip}") {
+                        invitation { invitationId }
+                    }
+                }
+            `
+        });
+        if (response.errors) return this.handleError(response.errors);
+        this.closeModal();
+        this.props.refresh();
+    }
+
+    submitInvite = async () => {
+        const { invitationId, invitationName, address: { houseNumber, streetAddress, aptNumber, city, state, zip } } = this.state.inviteToEdit!;
+        let response = await this.props.fetch({
+            query: `
+                mutation {
+                    editInvitation(invitationId: ${invitationId}, invitationName: "${invitationName}", houseNumber: "${houseNumber}", streetAddress: "${streetAddress}", aptNumber: "${aptNumber || ''}", city: "${city}", state: "${state}", zip: "${zip}") {
+                        invitation { invitationId }
+                    }
+                }
+            `
+        });
+        if (response.errors) return this.handleError(response.errors);
+        this.closeModal();
+        this.props.refresh();
+    }
+
+    deleteInvite = (invitationId: number) => async () => {
+        const response = await this.props.fetch({
+            query: `
+                mutation {
+                    deleteInvitation(invitationId: ${invitationId}) { invitationId }
+                }
+            `
+        });
+        if (response.errors) return this.handleError(response.errors);
+        this.closeModal();
+        this.props.refresh();
+    }
+
+    render() {
+        const { rsvps, fetch, refresh } = this.props;
+        const { showModal, inviteToEdit, adding } = this.state;
+        return (
+            <>
+                <InvitationTable
+                    className={styles.invitationTable}
+                    rowClassName={styles.invitationRow}
+                    dataSource={rsvps}
+                    rowKey="invitationId"
+                    expandedRowRender={(_: Invitation) => <GuestList invitationId={_.invitationId} guests={_.guests} fetch={fetch} refresh={refresh} />}
+                    pagination={false}
+                >
+                    <InvitationColumn title="Invite Name" dataIndex="invitationName" defaultSortOrder="ascend" />
+                    <InvitationColumn title="House Number" dataIndex="address.houseNumber" />
+                    <InvitationColumn title="Address" key="address" render={(_, i) => <Address address={i.address} />} />
+                    <InvitationColumn title="Manage" key="manage" render={(_, i) => <Button onClick={() => this.onManageClick(i)}>Manage</Button>} />
+                </InvitationTable>
+                <Button type="primary" onClick={this.openToAdd}>Add Invitation</Button>
+                {showModal && inviteToEdit
+                    && <Modal
+                        title={`${adding ? 'Add' : 'Manage'} Invitation`}
+                        visible={showModal}
+                        onOk={adding ? this.addInvite : this.submitInvite}
+                        onCancel={this.closeModal}
+                    >
+                        <h3>Name</h3>
+                        <Input placeholder="Name" value={inviteToEdit.invitationName} onChange={this.editInput('invitationName')} />
+                        <h3>House Number (For Login)</h3>
+                        <Input placeholder="House Number" value={inviteToEdit.address.houseNumber} onChange={this.editAddressInput('houseNumber')} />
+                        <h3>Address</h3>
+                        <Input placeholder="Street Address" value={inviteToEdit.address.streetAddress} onChange={this.editAddressInput('streetAddress')} />
+                        <Input placeholder="Apt Number (Optional)" value={inviteToEdit.address.aptNumber} onChange={this.editAddressInput('aptNumber')} />
+                        <Input placeholder="City" value={inviteToEdit.address.city} onChange={this.editAddressInput('city')} />
+                        <Input placeholder="State" value={inviteToEdit.address.state.trim()} onChange={this.editAddressInput('state')} />
+                        <Input placeholder="Zip" value={inviteToEdit.address.zip.trim()} onChange={this.editAddressInput('zip')} />
+                        {!adding && <>
+                            <h3>DANGER ZONE</h3>
+                            <Button type="danger" onClick={this.deleteInvite(inviteToEdit.invitationId)}>Delete Invitation</Button>
+                        </>}
+                    </Modal>}
+            </>
+        )
+    }
 }
 
 function Address({ address }: { address: Address }) {
@@ -173,6 +310,7 @@ class GuestColumn extends Table.Column<Guest> {}
 
 interface GuestListProps {
     refresh: () => void
+    invitationId: number;
     guests: Guest[];
     fetch: ApolloFetch;
 }
@@ -183,12 +321,20 @@ interface GuestListState {
     nicknamesToAdd: string[] | null;
     nicknamesToDelete: string[] | null;
     addingNickname: string;
+    adding: boolean;
 }
 
 class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
-    state: GuestListState = { showModal: false, guestToEdit: null, nicknamesToAdd: null, nicknamesToDelete: null, addingNickname: '' };
+    state: GuestListState = {
+        showModal: false,
+        guestToEdit: null,
+        nicknamesToAdd: null,
+        nicknamesToDelete: null,
+        addingNickname: '',
+        adding: false
+    };
 
-    onManageClick = (guest: Guest) => this.setState({ showModal: true, guestToEdit: { ...guest } });
+    onManageClick = (guest: Guest) => this.setState({ showModal: true, guestToEdit: { ...guest }, nicknamesToAdd: [], nicknamesToDelete: [], addingNickname: '', adding: false });
 
     handleError = (errors: any) => {
         let message: string;
@@ -200,31 +346,31 @@ class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
         notification.error({
             message: 'Error',
             description: message,
-            duration: 15
+            duration: 0
         });
     }
 
     submitGuest = async () => {
-        const { guestId, firstName, lastName, givenPlusOne, whoseGuest, guestType, plusOne, status } = this.state.guestToEdit;
+        const { guestId, firstName, lastName, givenPlusOne, whoseGuest, guestType, plusOne, status } = this.state.guestToEdit!;
         const { nicknamesToAdd, nicknamesToDelete } = this.state;
         let response = await this.props.fetch({
             query: `
                 mutation {
-                    editGuest(guestId: ${guestId}, firstName: "${firstName}", lastName: "${lastName}", plusOne: ${givenPlusOne}, owner: "${whoseGuest}", type: "${guestType}") {
+                    editGuest(guestId: ${guestId}, firstName: "${firstName}", lastName: "${lastName}", plusOne: ${givenPlusOne}, owner: ${whoseGuest}, type: ${guestType}) {
                         guest { guestId }
-                        ${nicknamesToAdd.map((_, i) => `addedNickname${i}: addNickname(name: "${_}")`).join('\n')}
-                        ${nicknamesToDelete.map((_, i) => `deletedNickname${i}: removeNickname(name: "${_}")`).join('\n')}
+                        ${nicknamesToAdd!.map((_, i) => `addedNickname${i}: addNickname(name: "${_}")`).join('\n')}
+                        ${nicknamesToDelete!.map((_, i) => `deletedNickname${i}: removeNickname(name: "${_}")`).join('\n')}
                     }
                 }
             `
         });
         if (response.errors) return this.handleError(response.errors);
-        const existingGuest = this.props.guests.find(_ => _.guestId === guestId);
+        const existingGuest = this.props.guests.find(_ => _.guestId === guestId)!;
         if (existingGuest.status !== status) {
             response = await this.props.fetch({
                 query: `
                     mutation {
-                        setRsvpStatus(guestId: ${guestId}, status: "${status}") { guest { guestId } }
+                        setRsvpStatus(guestId: ${guestId}, status: ${status}) { guestId }
                     }
                 `
             });
@@ -234,7 +380,7 @@ class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
             response = await this.props.fetch({
                 query: `
                     mutation {
-                        setPlusOneStatus(guestId: ${guestId}, taking: ${plusOne.taken}, firstName: "${plusOne.firstName}", lastName: "${plusOne.lastName}")
+                        setPlusOneStatus(guestId: ${guestId}, taking: ${plusOne.taken}, firstName: "${plusOne.firstName}", lastName: "${plusOne.lastName}") { guestId }
                     }
                 `
             });
@@ -248,66 +394,137 @@ class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
 
     editGuestInput = (key: keyof Guest) => (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
         guestToEdit: {
-            ...this.state.guestToEdit,
+            ...this.state.guestToEdit!,
             [key]: event.currentTarget.value
         }
     });
 
     editGuestSelect = (key: keyof Guest) => (value: SelectValue) => this.setState({
         guestToEdit: {
-            ...this.state.guestToEdit,
+            ...this.state.guestToEdit!,
             [key]: value as string
         }
     });
 
-    getNicknames = () => [...this.state.guestToEdit.nicknames.filter(_ => !this.state.nicknamesToDelete.includes(_)), ...this.state.nicknamesToAdd];
+    getNicknames = () => [...this.state.guestToEdit!.nicknames.filter(_ => !this.state.nicknamesToDelete!.includes(_)), ...this.state.nicknamesToAdd!];
 
     removeNickname = (name: string) => () => {
-        if (this.state.nicknamesToAdd.includes(name))
-            this.setState({ nicknamesToAdd: this.state.nicknamesToAdd.filter(_ => _ !== name) });
-        else if (this.state.guestToEdit.nicknames.includes(name))
-            this.setState({ nicknamesToDelete: [...this.state.nicknamesToDelete, name] });
+        if (this.state.nicknamesToAdd!.includes(name))
+            this.setState({ nicknamesToAdd: this.state.nicknamesToAdd!.filter(_ => _ !== name) });
+        else if (this.state.guestToEdit!.nicknames.includes(name))
+            this.setState({ nicknamesToDelete: [...this.state.nicknamesToDelete!, name] });
     }
 
     addNickname = () => {
         const name = this.state.addingNickname;
-        if (this.state.nicknamesToDelete.includes(name))
-            this.setState({ nicknamesToDelete: this.state.nicknamesToDelete.filter(_ => _ !== name) });
-        else if (!this.state.guestToEdit.nicknames.includes(name) && !this.state.nicknamesToAdd.includes(name))
-            this.setState({ nicknamesToAdd: [...this.state.nicknamesToAdd, name] });
+        if (this.state.nicknamesToDelete!.includes(name))
+            this.setState({ nicknamesToDelete: this.state.nicknamesToDelete!.filter(_ => _ !== name), addingNickname: '' });
+        else if (!this.state.guestToEdit!.nicknames.includes(name) && !this.state.nicknamesToAdd!.includes(name))
+            this.setState({ nicknamesToAdd: [...this.state.nicknamesToAdd!, name], addingNickname: '' });
+        else
+            this.setState({ addingNickname: '' });
     }
 
     setGivenPlusOne = (event: CheckboxChangeEvent) => this.setState({
         guestToEdit: {
-            ...this.state.guestToEdit,
+            ...this.state.guestToEdit!,
             givenPlusOne: event.target.checked,
-            plusOne: this.state.guestToEdit.plusOne || { taken: false, firstName: null, lastName: null }
+            plusOne: this.state.guestToEdit!.plusOne || { taken: false, firstName: null, lastName: null }
         }
     });
 
     editPlusOneCheckbox = (key: keyof PlusOne) => (event: CheckboxChangeEvent) => this.setState({
         guestToEdit: {
-            ...this.state.guestToEdit,
+            ...this.state.guestToEdit!,
             plusOne: {
-                ...this.state.guestToEdit.plusOne,
-                [key]: event.target.value
+                ...this.state.guestToEdit!.plusOne!,
+                [key]: event.target.checked
             }
         }
     });
 
     editPlusOneInput = (key: keyof PlusOne) => (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
         guestToEdit: {
-            ...this.state.guestToEdit,
+            ...this.state.guestToEdit!,
             plusOne: {
-                ...this.state.guestToEdit.plusOne,
+                ...this.state.guestToEdit!.plusOne!,
                 [key]: event.currentTarget.value
             }
         }
     });
 
+    deleteGuest = (guestId: number) => async () => {
+        const response = await this.props.fetch({
+            query: `
+                mutation {
+                    deleteGuest(guestId: ${guestId}) { guestId }
+                }
+            `
+        });
+        if (response.errors) return this.handleError(response.errors);
+        this.closeModal();
+        this.props.refresh();
+    }
+
+    getNewGuest = (): Guest => ({
+        guestId: -1,
+        firstName: '',
+        lastName: '',
+        status: 'NO_RSVP',
+        whoseGuest: 'BRIDE',
+        guestType: 'FAMILY',
+        givenPlusOne: false,
+        plusOne: null,
+        nicknames: [],
+        lastUpdatedByGuest: '',
+        lastUpdatedByGuestTimestamp: '',
+        lastUpdatedByAdminTimestamp: ''
+    });
+
+    openToAdd = () => this.setState({ showModal: true, guestToEdit: this.getNewGuest(), nicknamesToAdd: [], nicknamesToDelete: [], addingNickname: '', adding: true });
+
+    addGuest = async () => {
+        const { firstName, lastName, givenPlusOne, whoseGuest, guestType, plusOne, status } = this.state.guestToEdit!;
+        const { nicknamesToAdd } = this.state;
+        let response = await this.props.fetch({
+            query: `
+                mutation {
+                    guest: addGuest(invitationId: ${this.props.invitationId}, firstName: "${firstName}", lastName: "${lastName}", plusOne: ${givenPlusOne}, owner: ${whoseGuest}, type: ${guestType}) {
+                        guest { guestId }
+                        ${nicknamesToAdd!.map((_, i) => `addedNickname${i}: addNickname(name: "${_}")`)}
+                    }
+                }
+            `
+        });
+        if (response.errors) return this.handleError(response.errors);
+        const guestId = response.data.guest.guest.guestId;
+        if (status !== 'NO_RSVP') {
+            response = await this.props.fetch({
+                query: `
+                    mutation {
+                        setRsvpStatus(guestId: ${guestId}, status: ${status}) { guestId }
+                    }
+                `
+            });
+            if (response.errors) return this.handleError(response.errors);
+        }
+        if (plusOne) {
+            response = await this.props.fetch({
+                query: `
+                    mutation {
+                        setPlusOneStatus(guestId: ${guestId}, taking: ${plusOne.taken}, firstName: "${plusOne.firstName}", lastName: "${plusOne.lastName}") { guestId }
+                    }
+                `
+            });
+            if (response.errors) return this.handleError(response.errors);
+        }
+        this.closeModal();
+        this.props.refresh();
+    }
+
     render() {
         const { guests } = this.props;
-        const { showModal, guestToEdit } = this.state;
+        const { showModal, guestToEdit, adding } = this.state;
 
         return (
             <>
@@ -315,60 +532,67 @@ class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
                     <GuestColumn title="First Name" dataIndex="firstName" />
                     <GuestColumn title="Last Name" dataIndex="lastName" />
                     <GuestColumn title="Status" dataIndex="status" />
-                    <GuestColumn title="Given Plus One" dataIndex="givenPlusOne" />
-                    <GuestColumn title="Owner" dataIndex="whoseGuest" />
-                    <GuestColumn title="Type" dataIndex="guestType" />
-                    <GuestColumn title="Last Updated By" key="lastUpdatedByGuest" render={(_, g) => <GuestUpdateDate guest={g} />} />
-                    <GuestColumn title="Last Updated By Me" dataIndex="lastUpdatedByAdminTimestamp" />
-                    <GuestColumn title="Manage" key="manage" render={(_, g) => <Button onClick={() => this.onManageClick(g)} />} />
+                    <GuestColumn title="Manage" key="manage" render={(_, g) => <Button onClick={() => this.onManageClick(g)}>Manage</Button>} />
                 </GuestTable>
-                {showModal && <Modal title="Manage Guest" visible={showModal} onOk={this.submitGuest} onCancel={this.closeModal}>
-                    <h3>Name</h3>
-                    <Input placeholder="First Name" value={guestToEdit.firstName} onChange={this.editGuestInput('firstName')} />
-                    <Input placeholder="Last Name" value={guestToEdit.lastName} onChange={this.editGuestInput('lastName')} />
-                    <h3>Status</h3>
-                    <Select value={guestToEdit.status} onChange={this.editGuestSelect('status')}>
-                        <Select.Option value="NO_RSVP">No RSVP</Select.Option>
-                        <Select.Option value="ATTENDING">Attending</Select.Option>
-                        <Select.Option value="NOT_ATTENDING">Not attending</Select.Option>
-                    </Select>
-                    <h3>Owner</h3>
-                    <Select value={guestToEdit.whoseGuest} onChange={this.editGuestSelect('whoseGuest')}>
-                        <Select.Option value="BRIDE">Bride</Select.Option>
-                        <Select.Option value="GROOM">Groom</Select.Option>
-                    </Select>
-                    <h3>Type</h3>
-                    <Select value={guestToEdit.guestType} onChange={this.editGuestSelect('guestType')}>
-                        <Select.Option value="FAMILY">Family</Select.Option>
-                        <Select.Option value="FAMILY_FRIEND">Family friend</Select.Option>
-                        <Select.Option value="FRIEND">Friend</Select.Option>
-                        <Select.Option value="PARTY">Wedding party</Select.Option>
-                    </Select>
-                    <h3>Nicknames</h3>
-                    <List
-                        bordered
-                        dataSource={this.getNicknames()}
-                        renderItem={_ => <List.Item>{_}<Button onClick={this.removeNickname(_)}>Remove</Button></List.Item>}
-                    />
-                    <Input placeholder="Add nickname" value={this.state.addingNickname} onChange={_ => this.setState({ addingNickname: _.currentTarget.value })} />
-                    <Button onClick={this.addNickname}>Add</Button>
-                    <h3>Plus One</h3>
-                    <Checkbox value={guestToEdit.givenPlusOne} onChange={this.setGivenPlusOne}>Given Plus One?</Checkbox>
-                    {guestToEdit.givenPlusOne && <>
-                        <Checkbox value={guestToEdit.plusOne.taken} onChange={this.editPlusOneCheckbox('taken')}>Taking?</Checkbox>
-                        {guestToEdit.plusOne.taken && <>
-                            <Input placeholder="First name" value={guestToEdit.plusOne.firstName} onChange={this.editPlusOneInput('firstName')} />
-                            <Input placeholder="Last name" value={guestToEdit.plusOne.lastName} onChange={this.editPlusOneInput('lastName')} />
+                <Button type="primary" onClick={this.openToAdd}>Add Guest</Button>
+                {showModal && guestToEdit
+                    && <Modal
+                        title={`${adding ? 'Add' : 'Manage'} Guest`}
+                        visible={showModal}
+                        onOk={adding ? this.addGuest : this.submitGuest}
+                        onCancel={this.closeModal}
+                    >
+                        {!adding && <>
+                            <h3>Last Updated By Guest</h3>
+                            <h4>{guestToEdit.lastUpdatedByGuest || 'no one'}</h4>
+                            <h4>{guestToEdit.lastUpdatedByGuestTimestamp || 'never'}</h4>
+                            <h3>Last Updated By Admin</h3>
+                            <h4>{guestToEdit.lastUpdatedByAdminTimestamp || 'never'}</h4>
                         </>}
-                    </>}
-                </Modal>}
+                        <h3>Name</h3>
+                        <Input placeholder="First Name" value={guestToEdit.firstName} onChange={this.editGuestInput('firstName')} />
+                        <Input placeholder="Last Name" value={guestToEdit.lastName} onChange={this.editGuestInput('lastName')} />
+                        <h3>Status</h3>
+                        <Select value={guestToEdit.status} onChange={this.editGuestSelect('status')}>
+                            <Select.Option value="NO_RSVP">No RSVP</Select.Option>
+                            <Select.Option value="ATTENDING">Attending</Select.Option>
+                            <Select.Option value="NOT_ATTENDING">Not attending</Select.Option>
+                        </Select>
+                        <h3>Owner</h3>
+                        <Select value={guestToEdit.whoseGuest} onChange={this.editGuestSelect('whoseGuest')}>
+                            <Select.Option value="BRIDE">Bride</Select.Option>
+                            <Select.Option value="GROOM">Groom</Select.Option>
+                        </Select>
+                        <h3>Type</h3>
+                        <Select value={guestToEdit.guestType} onChange={this.editGuestSelect('guestType')}>
+                            <Select.Option value="FAMILY">Family</Select.Option>
+                            <Select.Option value="FAMILY_FRIEND">Family friend</Select.Option>
+                            <Select.Option value="FRIEND">Friend</Select.Option>
+                            <Select.Option value="PARTY">Wedding party</Select.Option>
+                        </Select>
+                        <h3>Nicknames</h3>
+                        <List
+                            bordered
+                            dataSource={this.getNicknames()}
+                            renderItem={(_: string) => <List.Item>{_}<Button onClick={this.removeNickname(_)}>Remove</Button></List.Item>}
+                        />
+                        <Input placeholder="Add nickname" value={this.state.addingNickname} onChange={_ => this.setState({ addingNickname: _.currentTarget.value })} />
+                        <Button onClick={this.addNickname}>Add</Button>
+                        <h3>Plus One</h3>
+                        <Checkbox checked={guestToEdit.givenPlusOne} onChange={this.setGivenPlusOne}>Given Plus One?</Checkbox>
+                        {guestToEdit.givenPlusOne && guestToEdit.plusOne && <>
+                            <Checkbox checked={guestToEdit.plusOne.taken} onChange={this.editPlusOneCheckbox('taken')}>Taking?</Checkbox>
+                            {guestToEdit.plusOne.taken && <>
+                                <Input placeholder="First name" value={guestToEdit.plusOne.firstName} onChange={this.editPlusOneInput('firstName')} />
+                                <Input placeholder="Last name" value={guestToEdit.plusOne.lastName} onChange={this.editPlusOneInput('lastName')} />
+                            </>}
+                        </>}
+                        {!adding && <>
+                            <h3>DANGER ZONE</h3>
+                            <Button type="danger" onClick={this.deleteGuest(guestToEdit.guestId)}>Delete Guest</Button>
+                        </>}
+                    </Modal>}
             </>
         )
     }
-}
-
-function GuestUpdateDate({ guest }: { guest: Guest }) {
-    return <>
-        {guest.lastUpdatedByGuest}: {guest.lastUpdatedByGuestTimestamp}
-    </>
 }

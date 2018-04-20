@@ -98,7 +98,7 @@ export default class Login extends React.PureComponent<LoginProps, LoginState> {
                         placeholder="House Number"
                     />
                 </div>
-                {nameInput && streetNumberInput && <p>
+                {nameInput && streetNumberInput && <p className={styles.loginExplanation}>
                     Press Enter to look up your RSVP.
                 </p>}
             </>

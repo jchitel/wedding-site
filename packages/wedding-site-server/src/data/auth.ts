@@ -67,7 +67,7 @@ export default class AuthClient {
                 ...jwtSignOptions,
                 subject: match.invitationName,
                 jwtid: crypto.randomBytes(16).toString('base64'),
-                expiresIn: weddingDateSeconds - (Date.now() / 1000) // expires the day of the wedding
+                expiresIn: (weddingDateSeconds - (Date.now() / 1000))|0 // expires the day of the wedding
             });
         }
     }

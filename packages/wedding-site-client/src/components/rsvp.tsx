@@ -1,12 +1,12 @@
 /// <reference path="../../typings/types.d.ts" />
 import * as React from 'react';
-import Input from 'antd/lib/input';
 import 'antd/lib/input/style';
 import styles from './rsvp.less';
 import Login from './rsvp/login';
 import { JwtClaims } from 'wedding-site-shared';
-import { createApolloFetch, ApolloFetch } from 'apollo-fetch';
+import { createApolloFetch, ApolloFetch, constructDefaultOptions } from 'apollo-fetch';
 import Admin from './rsvp/admin';
+import ManageRsvp from './rsvp/manage-rsvp';
 
 
 interface RsvpState {
@@ -21,13 +21,16 @@ export default class Rsvp extends React.PureComponent<{}, RsvpState> {
 
         this.fetch = createApolloFetch({
             uri: '/graphql',
-            constructOptions: (request, options) => ({
-                ...options,
-                headers: {
-                    ...options.headers,
-                    authorization: `Bearer ${this.state.jwt}`
+            constructOptions: (request, options) => {
+                const defaultOptions = constructDefaultOptions(request, options);
+                return {
+                    ...defaultOptions,
+                    headers: {
+                        ...defaultOptions.headers,
+                        authorization: `Bearer ${this.state.jwt}`
+                    }
                 }
-            })
+            }
         });
 
         this.state = {
@@ -63,7 +66,7 @@ export default class Rsvp extends React.PureComponent<{}, RsvpState> {
                 {this.state.jwt
                     ? claims.isAdmin
                         ? <Admin fetch={this.fetch} onLogout={this.onLogout} />
-                        : <ManageRsvp fetch={this.fetch} invitationId={claims.invitationId!} />
+                        : <ManageRsvp fetch={this.fetch} invitationId={claims.invitationId!} onLogout={this.onLogout} />
                     : <Login onToken={this.onToken} />}
             </>
         );

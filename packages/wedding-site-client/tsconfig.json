@@ -2,6 +2,7 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./build",
+    "sourceMap": true,
     "target": "es5",
     "module": "commonjs",
     "lib": ["dom", "esnext"],
@@ -20,6 +21,7 @@
     "esModuleInterop": true
   },
   "include": [
-    "./typings/types.d.ts"
+    "./typings/types.d.ts",
+    "./src/**/*"
   ]
 }

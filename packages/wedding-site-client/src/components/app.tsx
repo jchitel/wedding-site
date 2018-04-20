@@ -7,6 +7,7 @@ import Venue from './venue';
 import Hotel from './hotel';
 import Map from './map';
 import Registry from './registry';
+import Rsvp from './rsvp';
 
 
 export default function App() {
@@ -25,6 +26,8 @@ export default function App() {
             <Map />
             <hr />
             <Registry />
+            <hr />
+            <Rsvp />
             <div className={styles.footer}>
                 <span>
                     Created by Jake Chitel &copy; 2018

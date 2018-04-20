@@ -1,7 +1,7 @@
 Error.stackTraceLimit = Infinity;
 process.env.SERVER_ENV = 'lambda';
-import serverless from 'aws-serverless-express';
-import app from 'wedding-site-server';
+const serverless = require('aws-serverless-express');
+const app = require('wedding-site-server');
 
 
 /** export lambda hander wrapped around express app */
