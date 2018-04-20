@@ -42,6 +42,21 @@
         border-top: 0;
         border-width: 2px;
     }
+
+    .ant-radio-group {
+        font-family: 'parchment-print';
+
+        .ant-radio-button-wrapper {
+            background-color: rgba(255,255,255,0.5);
+            border-color: @color-primary;
+        }
+
+        .ant-radio-button-wrapper-checked {
+            border-color: @color-secondary;
+            color: @color-secondary;
+            box-shadow: -1px 0 0 0 @color-secondary;
+        }
+    }
 }
 
 @color-primary: #203453;
@@ -56,6 +71,9 @@
 .title:extend(.centerText)  {
     font-family: wizard-hand;
     font-size: 8em;
+    @media screen and (max-width: 767px) {
+        font-size: 6em;
+    }
     margin-bottom: 20px;
 }
 
@@ -65,8 +83,14 @@
     font-size: 1em;
 }
 
-.toc {
-    a:not(:hover) {
-        text-decoration: none;
+:global {
+    .toc {
+        a:not(:hover) {
+            text-decoration: none;
+        }
+
+        .toc-link {
+            padding: 0 5px;
+        }
     }
 }

@@ -34,7 +34,6 @@ const FULL_RSVPS_QUERY = `
                 }
                 whoseGuest
                 guestType
-                lastUpdatedByGuest
                 lastUpdatedByGuestTimestamp
                 lastUpdatedByAdminTimestamp
             }
@@ -68,7 +67,6 @@ interface Guest {
     plusOne: PlusOne | null;
     whoseGuest: string;
     guestType: string;
-    lastUpdatedByGuest: string;
     lastUpdatedByGuestTimestamp: string;
     lastUpdatedByAdminTimestamp: string;
 }
@@ -380,7 +378,7 @@ class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
             response = await this.props.fetch({
                 query: `
                     mutation {
-                        setPlusOneStatus(guestId: ${guestId}, taking: ${plusOne.taken}, firstName: "${plusOne.firstName}", lastName: "${plusOne.lastName}") { guestId }
+                        setPlusOneStatus(guestId: ${guestId}, taking: ${plusOne.taken}, firstName: ${plusOne.firstName ? `"${plusOne.firstName}"` : 'null'}, lastName: ${plusOne.lastName ? `"${plusOne.lastName}"` : 'null'}) { guestId }
                     }
                 `
             });
@@ -476,7 +474,6 @@ class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
         givenPlusOne: false,
         plusOne: null,
         nicknames: [],
-        lastUpdatedByGuest: '',
         lastUpdatedByGuestTimestamp: '',
         lastUpdatedByAdminTimestamp: ''
     });
@@ -512,7 +509,7 @@ class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
             response = await this.props.fetch({
                 query: `
                     mutation {
-                        setPlusOneStatus(guestId: ${guestId}, taking: ${plusOne.taken}, firstName: "${plusOne.firstName}", lastName: "${plusOne.lastName}") { guestId }
+                        setPlusOneStatus(guestId: ${guestId}, taking: ${plusOne.taken}, firstName: ${plusOne.firstName ? `"${plusOne.firstName}"` : 'null'}, lastName: ${plusOne.lastName ? `"${plusOne.lastName}"` : 'null'}) { guestId }
                     }
                 `
             });
@@ -544,7 +541,6 @@ class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
                     >
                         {!adding && <>
                             <h3>Last Updated By Guest</h3>
-                            <h4>{guestToEdit.lastUpdatedByGuest || 'no one'}</h4>
                             <h4>{guestToEdit.lastUpdatedByGuestTimestamp || 'never'}</h4>
                             <h3>Last Updated By Admin</h3>
                             <h4>{guestToEdit.lastUpdatedByAdminTimestamp || 'never'}</h4>

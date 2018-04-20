@@ -3,7 +3,7 @@ import * as React from 'react';
 import Input from 'antd/lib/input';
 import 'antd/lib/input/style';
 import styles from '../rsvp.less';
-import { notification } from 'antd';
+import { notification, Button } from 'antd';
 import { ErrorCode } from 'wedding-site-shared';
 import { createApolloFetch } from 'apollo-fetch';
 
@@ -82,7 +82,7 @@ export default class Login extends React.PureComponent<LoginProps, LoginState> {
                     If, for some reason, this is not working for you,
                     please contact <b>jchitel@gmail.com</b>.
                 </p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', width: 400, margin: 'auto' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-around', minWidth: 400, margin: 'auto', marginBottom: 15 }}>
                     <Input
                         className={styles.loginInput}
                         value={nameInput}
@@ -97,8 +97,9 @@ export default class Login extends React.PureComponent<LoginProps, LoginState> {
                         onPressEnter={this.onEnter}
                         placeholder="House Number"
                     />
+                    <Button className={styles.showOnMobile} onClick={this.onEnter}>Login</Button>
                 </div>
-                {nameInput && streetNumberInput && <p className={styles.loginExplanation}>
+                {nameInput && streetNumberInput && <p className={`${styles.loginExplanation} ${styles.hideOnMobile}`}>
                     Press Enter to look up your RSVP.
                 </p>}
             </>

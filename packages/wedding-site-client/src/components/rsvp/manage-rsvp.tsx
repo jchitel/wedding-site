@@ -137,28 +137,35 @@ export default class ManageRsvp extends React.PureComponent<ManageRsvpProps, Man
                 contact jchitel@gmail.com.
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-                {guests.map(g => <GuestEntry guest={g} onChange={this.onGuestChange(g.guestId)} />)}
+                {guests.map(g => <GuestEntry key={g.guestId} guest={g} onChange={this.onGuestChange(g.guestId)} />)}
             </div>
-            <br />
-            <Button type="primary" onClick={this.submit}>Submit</Button>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <Button type="primary" onClick={this.submit}>Submit</Button>
+            </div>
         </>;
     }
 }
 
 function GuestEntry({ guest, onChange }: { guest: Guest, onChange: (guest: Guest) => void }) {
-    return <div style={{ width: 200 }}>
-        <span className={styles.address}>{guest.firstName} {guest.lastName}</span>
-        <Radio.Group onChange={_ => onChange({ ...guest, status: _.target.value })} value={guest.status}>
-            <Radio.Button value="NO_RSVP">No Response</Radio.Button>
-            <Radio.Button value="ATTENDING">Attending</Radio.Button>
-            <Radio.Button value="NOT_ATTENDING">Not Attending</Radio.Button>
-        </Radio.Group>
-        {guest.givenPlusOne && guest.plusOne
-            && <Checkbox checked={guest.plusOne.taken} onChange={_ => onChange({ ...guest, plusOne: { ...guest.plusOne!, taken: _.target.checked } })}>Taking Plus One?</Checkbox>}
-        {guest.givenPlusOne && guest.plusOne && guest.plusOne.taken
-            && <>
-                <Input value={guest.plusOne.firstName} onChange={_ => onChange({ ...guest, plusOne: { ...guest.plusOne!, firstName: _.currentTarget.value } })} placeholder="First Name" />
-                <Input value={guest.plusOne.lastName} onChange={_ => onChange({ ...guest, plusOne: { ...guest.plusOne!, lastName: _.currentTarget.value } })} placeholder="Last Name" />
-            </>}
+    return <div style={{ width: 250, marginBottom: 30 }}>
+        <span className={styles.address} style={{ marginBottom: 10 }}>{guest.firstName} {guest.lastName}</span>
+        <span className={styles.center}>Coming?</span>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Radio.Group onChange={_ => onChange({ ...guest, status: _.target.value })} value={guest.status}>
+                <Radio.Button value="ATTENDING">YES</Radio.Button>
+                <Radio.Button value="NOT_ATTENDING">NO</Radio.Button>
+            </Radio.Group>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+            {guest.givenPlusOne && guest.plusOne
+                && <Checkbox checked={guest.plusOne.taken} onChange={_ => onChange({ ...guest, plusOne: { ...guest.plusOne!, taken: _.target.checked } })}>Taking Plus One?</Checkbox>}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+            {guest.givenPlusOne && guest.plusOne && guest.plusOne.taken
+                && <>
+                    <Input className={styles.plusOneInput} value={guest.plusOne.firstName} onChange={_ => onChange({ ...guest, plusOne: { ...guest.plusOne!, firstName: _.currentTarget.value } })} placeholder="First Name" />
+                    <Input className={styles.plusOneInput} value={guest.plusOne.lastName} onChange={_ => onChange({ ...guest, plusOne: { ...guest.plusOne!, lastName: _.currentTarget.value } })} placeholder="Last Name" />
+                </>}
+        </div>
     </div>
 }

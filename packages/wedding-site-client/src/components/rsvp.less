@@ -18,6 +18,11 @@
     font-size: 1.5em;
 }
 
+.center {
+    display: block;
+    text-align: center;
+}
+
 .submitButton {
     margin: auto;
 }
@@ -29,7 +34,28 @@
     width: 150px;
 }
 
+.plusOneInput {
+    background-color: rgba(255,255,255,0.5);
+    border-color: @color-primary;
+    font-family: parchment-print;
+}
+
 .loginExplanation {
     padding: 0 80px;
+    @media screen and (max-width: 767px) {
+        padding: 0 5%;
+    }
     font-size: 1rem;
+}
+
+@media screen and (min-width: 768px) {
+    .showOnMobile {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .hideOnMobile {
+        display: none;
+    }
 }

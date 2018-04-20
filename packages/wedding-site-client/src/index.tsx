@@ -10,6 +10,7 @@ import 'antd/lib/list/style/index.less';
 import 'antd/lib/checkbox/style/index.less';
 import 'antd/lib/notification/style/index.less';
 import 'antd/lib/radio/style/index.less';
+import './styles/style.less';
 import React from 'react';
 import { render } from 'react-dom';
 import App from './components/app';
