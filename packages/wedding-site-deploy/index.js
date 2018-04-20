@@ -6,7 +6,7 @@ const app = require('wedding-site-server');
 
 /** export lambda hander wrapped around express app */
 const server = serverless.createServer(app);
-export async function handler(event, context) {
+module.exports.handler = async function handler(event, context) {
     context.callbackWaitsForEmptyEventLoop = true;
     console.log('Handling event:', event);
     return new Promise((resolve, reject) => {
