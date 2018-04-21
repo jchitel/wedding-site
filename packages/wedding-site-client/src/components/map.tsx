@@ -7,12 +7,13 @@ export default function Map() {
         + '?origin=place_id:ChIJ50eLV9cCBYgRhHtBtSIZX0Q'
         + '&destination=place_id:ChIJxXFqjwAZBYgRnSJa_ZcX094'
         + '&key=AIzaSyCB7uuMVKZcFx1fKpp6cpSoOlYBRnLG88o';
+    const width = Math.min(window.outerWidth, 600).toString();
 
     return (
         <>
             <span id="map" style={{ ...centerText, fontSize: '4em' }}>Map</span>
             <iframe
-                width="600"
+                width={width}
                 height="450"
                 frameBorder="0"
                 style={{ display: 'block', margin: 'auto', border: 0 }}
