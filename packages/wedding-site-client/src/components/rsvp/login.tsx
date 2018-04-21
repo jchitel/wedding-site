@@ -82,7 +82,7 @@ export default class Login extends React.PureComponent<LoginProps, LoginState> {
                     If, for some reason, this is not working for you,
                     please contact <b>jchitel@gmail.com</b>.
                 </p>
-                <div style={{ display: 'flex', justifyContent: 'space-around', minWidth: 400, margin: 'auto', marginBottom: 15 }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around', minWidth: 400, maxWidth: '90%', margin: 'auto', marginBottom: 15 }}>
                     <Input
                         className={styles.loginInput}
                         value={nameInput}
