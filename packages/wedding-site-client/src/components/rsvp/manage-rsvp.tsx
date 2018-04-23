@@ -163,8 +163,8 @@ function GuestEntry({ guest, onChange }: { guest: Guest, onChange: (guest: Guest
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             {guest.givenPlusOne && guest.plusOne && guest.plusOne.taken
                 && <>
-                    <Input className={styles.plusOneInput} value={guest.plusOne.firstName} onChange={_ => onChange({ ...guest, plusOne: { ...guest.plusOne!, firstName: _.currentTarget.value } })} placeholder="First Name" />
-                    <Input className={styles.plusOneInput} value={guest.plusOne.lastName} onChange={_ => onChange({ ...guest, plusOne: { ...guest.plusOne!, lastName: _.currentTarget.value } })} placeholder="Last Name" />
+                    <Input value={guest.plusOne.firstName} onChange={_ => onChange({ ...guest, plusOne: { ...guest.plusOne!, firstName: _.currentTarget.value } })} placeholder="First Name" />
+                    <Input value={guest.plusOne.lastName} onChange={_ => onChange({ ...guest, plusOne: { ...guest.plusOne!, lastName: _.currentTarget.value } })} placeholder="Last Name" />
                 </>}
         </div>
     </div>

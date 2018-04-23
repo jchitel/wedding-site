@@ -82,14 +82,12 @@ export default class Login extends React.PureComponent<LoginProps, LoginState> {
                 </p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around', minWidth: 400, maxWidth: '90%', margin: 'auto', marginBottom: 15 }}>
                     <Input
-                        className={styles.loginInput}
                         value={nameInput}
                         onChange={e => this.setState({ nameInput: e.currentTarget.value })}
                         onPressEnter={this.onEnter}
                         placeholder="Name"
                     />
                     <Input
-                        className={styles.loginInput}
                         value={streetNumberInput}
                         onChange={e => this.setState({ streetNumberInput: e.currentTarget.value })}
                         onPressEnter={this.onEnter}

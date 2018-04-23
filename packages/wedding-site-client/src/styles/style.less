@@ -46,18 +46,25 @@
     }
 
     .ant-radio-group {
-        font-family: 'parchment-print';
+        font-family: 'parchment-print' !important;
 
         .ant-radio-button-wrapper {
-            background-color: rgba(255,255,255,0.5);
-            border-color: @color-primary;
+            background-color: rgba(255,255,255,0.5) !important;
+            border-color: @color-primary !important;
         }
 
         .ant-radio-button-wrapper-checked {
-            border-color: @color-secondary;
-            color: @color-secondary;
-            box-shadow: -1px 0 0 0 @color-secondary;
+            border-color: @color-secondary !important;
+            color: @color-secondary !important;
+            box-shadow: -1px 0 0 0 @color-secondary !important;
         }
+    }
+
+    .ant-input {
+        background-color: rgba(255,255,255,0.5) !important;
+        border-color: @color-primary !important;
+        font-family: parchment-print;
+        width: 150px !important;
     }
 }
 
