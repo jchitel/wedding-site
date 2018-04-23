@@ -1,6 +1,5 @@
 /// <reference path="../../typings/types.d.ts" />
 import * as React from 'react';
-import 'antd/lib/input/style';
 import styles from './rsvp.less';
 import Login from './rsvp/login';
 import { JwtClaims } from 'wedding-site-shared';
