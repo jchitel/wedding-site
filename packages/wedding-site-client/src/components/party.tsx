@@ -21,9 +21,6 @@ export default function Party() {
     return <div style={{ width: '80%', margin: 'auto', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
         <span id="party" style={{ textAlign: 'center', fontSize: '4em', width: '100%' }}>Wedding Party</span>
         <div style={{ minWidth: 300, maxWidth: 350, display: 'flex', flexDirection: 'column' }}>
-            <span style={{ textAlign: 'center', fontSize: '3em' }}>Matron of Honor</span>
-            <span style={{ textAlign: 'center', fontSize: '2em' }}>Lisa Yoo</span>
-            <p></p>
             <span style={{ textAlign: 'center', fontSize: '3em' }}>Maid of Honor</span>
             <img style={{ maxWidth: 300, height: 'auto', margin: '0 auto' }} src={megan} />
             <span style={{ textAlign: 'center', fontSize: '2em' }}>Megan Mellenthien</span>
