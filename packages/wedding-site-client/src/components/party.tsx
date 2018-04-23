@@ -12,7 +12,7 @@ import samm from '../images/samm_snyder.jpg';
 import jess from '../images/jess_chitel.jpg';
 import allie from '../images/allie_snyder.jpg';
 import shannon1 from '../images/shannon_ingles.jpg';
-import katie from '../images/katie_higgs.jpg';
+import katie from '../images/katie_higgins.jpg';
 import faille from '../images/faille_bloom.jpg';
 import shannon2 from '../images/shannon_fuller.jpg';
 
