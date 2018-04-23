@@ -56,19 +56,19 @@ export default function Party() {
             <img style={{ width: 250, height: 'auto', margin: '0 auto' }} src={samm} />
             <span style={{ textAlign: 'center', fontSize: '2em' }}>Samm Snyder</span>
             <p>
-                Hi everyone, I am Samm Snyder and I am a senior at the University of Alabama studying development
+                Hi everyone, I am Samm Snyder and I am a senior at the University of Alabama, studying development
                 of human biology on the pre-med track as an aspiring surgeon. The Chitel family have been very good
                 friends with our family since we were very young, and therefore they feel like family to us. When Megan
                 came into Jake's life we were soon introduced to her and fell in love with her and them as a couple. She
                 soon became part of the family with all of us! Through their years together we have spent so many holidays
                 and warm summer days together with many laughs and lots of love. I have been so blessed that we have
-                become to close and honored that they asked me to be a part of their big day.
+                become so close and honored that they asked me to be a part of their big day.
             </p>
             <img style={{ width: 250, height: 'auto', margin: '0 auto' }} src={jess} />
             <span style={{ textAlign: 'center', fontSize: '2em' }}>Jess Chitel</span>
             <p>
                 My name is Jess and I am the sister of the groom, and soon to be Megan's sister too! I am studying
-                Kinesiology and UW-Madison with the hopes of going on to become a physical therapist. I am so excited
+                Kinesiology at UW-Madison with the hopes of going on to become a physical therapist. I am so excited
                 to be a part of the wedding and share in Jake and Megan's celebration!
             </p>
             <img style={{ width: 250, height: 'auto', margin: '0 auto' }} src={allie} />
@@ -80,7 +80,7 @@ export default function Party() {
                 playing volleyball, going on vacations and even having thanksgiving together. The Chitels were always
                 family to us. Then I met Megan about 5 years ago when Jake introduced her to us and she immediately
                 became part of the crazy Chitel/Snyder clan! We always have such a great time together and I cannot
-                wait to be apart of your  day! Love you guys 💜
+                wait to be a part of your day! Love you guys 💜
             </p>
             <img style={{ width: 250, height: 'auto', margin: '0 auto' }} src={shannon1} />
             <span style={{ textAlign: 'center', fontSize: '2em' }}>Shannon Ingles</span>
@@ -92,7 +92,16 @@ export default function Party() {
             </p>
             <img style={{ width: 250, height: 'auto', margin: '0 auto' }} src={katie} />
             <span style={{ textAlign: 'center', fontSize: '2em' }}>Katie Higgins</span>
-            <p></p>
+            <p>
+                Hi, I'm Katie and I was born and raised here in Milwaukee, but went off to Green Bay for college. I got
+                my degree in English and am pretty much always reading or writing something. I met Megan while we were
+                both working for Lego! It's been three years of bricks and silliness. It's great to have a friend to turn
+                to when the shift gets long. We've gotten very good at dancing to the radio and communicating through
+                highly complex stick person drawings. We've bonded over our mutual love of making costume replicas and
+                sewing or crafting all sorts of other projects! We can talk concepts and fabric and exactly how much
+                glitter we really need and get a knowledgeable second opinion. I'm excited to see how all the design
+                ideas come together to make a wonderful wedding!
+            </p>
             <img style={{ width: 250, height: 'auto', margin: '0 auto' }} src={faille} />
             <span style={{ textAlign: 'center', fontSize: '2em' }}>Faille Bloom</span>
             <p>
@@ -106,17 +115,17 @@ export default function Party() {
             <img style={{ width: 250, height: 'auto', margin: '0 auto' }} src={shannon2} />
             <span style={{ textAlign: 'center', fontSize: '2em' }}>Shannon Fuller</span>
             <p>
-                Megan knew me before I knew me; I am Megan's second cousin. Megan was a close companion throughout
-                our younger years. I found her fun and fascinating even then. Her friendship made my childhood full of
-                good cheer as well as many odd stories. Throughout much of high school, Megan was my confidant and friend.
-                Megan and Jake were my rock during an upsetting Junior prom, and she provided me with more than I could
-                have asked for that night. Reading this, she may not realize how much her and Jake's presence was
-                comforting, but I will assure her that little has meant more to me than seeing what love can be. As I
-                have gone through my own long-term relationship, I have come to see her and Jake's bond as a model for
-                what love should look like. In the end, I could not be more grateful for her lessons in how to love and
-                love well. She has given her wisdom even when I haven't asked, and I think these are the lessons I have
-                needed and cherished the most. I could not be more grateful for Megan's friendship and her presence in my
-                life. She is my cousin; but, more so, she is my friend. 
+                Megan knew me before I knew me; by that I mean to say, I am Megan's second cousin! Megan was a close
+                companion throughout our younger years. I found her fun and fascinating even then. Her friendship made
+                my childhood full of good cheer as well as many odd stories. Throughout much of high school, Megan was
+                my confidant and friend. Megan and Jake were my rock during an upsetting Junior prom, and she provided
+                me with more than I could have asked for that night. Reading this, she may not realize how much her and
+                Jake's presence was comforting, but I will assure her that little has meant more to me than seeing what
+                love can be. As I have gone through my own long-term relationship, I have come to see her and Jake's bond
+                as a model for what love should look like. In the end, I could not be more grateful for her lessons in
+                how to love and love well. She has given her wisdom even when I haven't asked, and I think these are the
+                lessons I have needed and cherished the most. I could not be more grateful for Megan's friendship and her
+                presence in my life. She is my cousin; but, more so, she is my friend.
             </p>
         </div>
         <div style={{ minWidth: 300, maxWidth: 350, display: 'flex', flexDirection: 'column' }}>
@@ -145,7 +154,7 @@ export default function Party() {
                 Jake and I met in freshman year of high school. We worked together on a bunch of projects, unsurprising
                 considering we had almost exactly the same classes. As we started college, Jake helped me discover my
                 interest in developing software. We both embarked on the great journey to Seattle together, and although
-                we live live 3000 miles apart now, we're still great friends. I know whenever I return home, I'll always
+                we live 3000 miles apart now, we're still great friends. I know whenever I return home, I'll always
                 be able to find a friend in Jake.
             </p>
             <img style={{ width: 250, height: 'auto', margin: '0 auto' }} src={joe} />
