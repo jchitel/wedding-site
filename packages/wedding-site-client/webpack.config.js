@@ -44,7 +44,7 @@ module.exports = (env = {}, argv = {}) => ({
                 }]
             }),
         }, {
-            test: /\.(jpg|png|ttf)$/,
+            test: /\.(jpg|jpeg|png|ttf)$/,
             use: 'file-loader'
         }]
     },
