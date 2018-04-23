@@ -119,7 +119,7 @@ export default class ManageRsvp extends React.PureComponent<ManageRsvpProps, Man
         const { loading, error, invitationName, addressLine1, addressLine2, guests } = this.state;
 
         if (error) return <Button type="primary" onClick={this.retry}>Retry</Button>;
-        if (loading) return <Spin />;
+        if (loading) return <div style={{ display: 'flex', justifyContent: 'space-around' }}><Spin /></div>;
 
         const anyPlusOnes = guests.some(_ => _.givenPlusOne);
 

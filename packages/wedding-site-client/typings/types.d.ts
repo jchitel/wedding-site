@@ -3,6 +3,11 @@ declare module "*.png" {
     export = href;
 }
 
+declare module "*.jpg" {
+    const href: string;
+    export = href;
+}
+
 declare module '*.less' {
     const classes: any;
     export = classes;

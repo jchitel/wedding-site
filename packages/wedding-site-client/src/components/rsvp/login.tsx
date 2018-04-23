@@ -1,9 +1,7 @@
 /// <reference path="../../../typings/types.d.ts" />
 import * as React from 'react';
-import Input from 'antd/lib/input';
-import 'antd/lib/input/style';
 import styles from '../rsvp.less';
-import { notification, Button } from 'antd';
+import { notification, Button, Input } from 'antd';
 import { ErrorCode } from 'wedding-site-shared';
 import { createApolloFetch } from 'apollo-fetch';
 

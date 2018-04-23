@@ -5,9 +5,10 @@ import Countdown from './countdown';
 import Toc from './toc';
 import Venue from './venue';
 import Hotel from './hotel';
-import Map from './map';
 import Registry from './registry';
 import Rsvp from './rsvp';
+import Couple from './couple';
+import Party from './party';
 
 
 export default function App() {
@@ -23,11 +24,13 @@ export default function App() {
             <hr />
             <Hotel />
             <hr />
-            <Map />
-            <hr />
             <Registry />
             <hr />
             <Rsvp />
+            <hr />
+            <Couple />
+            <hr />
+            <Party />
             <div className={styles.footer}>
                 <span>
                     Created by Jake Chitel &copy; 2018
