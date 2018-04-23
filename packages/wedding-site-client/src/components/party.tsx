@@ -91,7 +91,7 @@ export default function Party() {
                 happy to be a part of this celebration for Megan and Jake!
             </p>
             <img style={{ width: 250, height: 'auto', margin: '0 auto' }} src={katie} />
-            <span style={{ textAlign: 'center', fontSize: '2em' }}>Katie Higgs</span>
+            <span style={{ textAlign: 'center', fontSize: '2em' }}>Katie Higgins</span>
             <p></p>
             <img style={{ width: 250, height: 'auto', margin: '0 auto' }} src={faille} />
             <span style={{ textAlign: 'center', fontSize: '2em' }}>Faille Bloom</span>
