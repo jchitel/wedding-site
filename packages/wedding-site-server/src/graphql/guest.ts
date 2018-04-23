@@ -24,12 +24,12 @@ type Guest {
     givenPlusOne: Boolean!
     # Container for the guest's plus one info, will only be non-null if the guest is taking a plus one
     plusOne: PlusOne
+    # Guest's meal choice
+    mealChoice: RsvpMeal!
     # Label for who the guest belongs to: bride or groom
     whoseGuest: GuestOwner!
     # Label for the type of guest
     guestType: GuestType!
-    # Last updated guest name (admin updated will have no effect on this)
-    lastUpdatedByGuest: String
     # Last updated timestamp (just by the guest, admin updates will have no effect on this)
     lastUpdatedByGuestTimestamp: String
     # Last updated by admin timestamp (guest updates will have no effect on this)
@@ -44,6 +44,8 @@ type PlusOne {
     firstName: String
     # Last name of the plus one, only if it was taken
     lastName: String
+    # Plus One's meal choice
+    mealChoice: RsvpMeal
 }
 
 # The RSVP status of a guest
@@ -76,6 +78,18 @@ enum GuestType {
     # The guest is in the wedding party
     PARTY
 }
+
+# The meal choice of a guest/plus one
+enum RsvpMeal {
+    # No meal was chosen, the guest is opting out of a dinner choice
+    NO_MEAL
+    # Beef short rib
+    BEEF
+    # Sage chicken
+    CHICKEN
+    # Salmon
+    SALMON
+}
 `;
 
 /** RsvpStatus enum resolver */
@@ -99,6 +113,14 @@ export const GuestType = {
     PARTY: 'party'
 };
 
+/** RsvpMeal enum resolver */
+export const RsvpMeal = {
+    NO_MEAL: 'no_meal',
+    BEEF: 'beef',
+    CHICKEN: 'chicken',
+    SALMON: 'salmon'
+};
+
 export const invitationGuests: IFieldResolver<Invitation, IWeddingSiteContext> = async (source, _args, context) => {
     const invitationId = source.invitationId;
     const guestClient = new GuestClient(context.client);
@@ -120,7 +142,19 @@ export const setRsvpStatus: IFieldResolver<{}, IWeddingSiteContext> = async (_so
     const guestClient = new GuestClient(context.client);
     return claims.isAdmin
         ? guestClient.updateRsvpStatusAdmin(args.guestId, args.status)
-        : guestClient.updateRsvpStatusGuest(args.guestId, args.status, claims.name);
+        : guestClient.updateRsvpStatusGuest(args.guestId, args.status);
+}
+
+export const setMealChoice: IFieldResolver<{}, IWeddingSiteContext> = async (_source, args, context) => {
+    // any user can set meal choice as long as they are authorized
+    const authClient = new AuthClient(context.client);
+    const claims = authClient.authorize(context.token);
+
+    // set dat meal choice
+    const guestClient = new GuestClient(context.client);
+    return claims.isAdmin
+        ? guestClient.updateMealChoiceAdmin(args.guestId, args.choice)
+        : guestClient.updateMealChoiceGuest(args.guestId, args.choice);
 }
 
 export const setPlusOneStatus: IFieldResolver<{}, IWeddingSiteContext> = async (_source, args, context) => {
@@ -131,8 +165,8 @@ export const setPlusOneStatus: IFieldResolver<{}, IWeddingSiteContext> = async (
     // set dat plus one status
     const guestClient = new GuestClient(context.client);
     return claims.isAdmin
-        ? guestClient.updatePlusOneStatusAdmin(args.guestId, args.taking, args.firstName, args.lastName)
-        : guestClient.updatePlusOneStatusGuest(args.guestId, args.taking, args.firstName, args.lastName, claims.name);
+        ? guestClient.updatePlusOneStatusAdmin(args.guestId, args.taking, args.firstName, args.lastName, args.mealChoice)
+        : guestClient.updatePlusOneStatusGuest(args.guestId, args.taking, args.firstName, args.lastName, args.mealChoice);
 }
 
 export const addGuest: IFieldResolver<{}, IWeddingSiteContext> = async (_source, args, context) => {

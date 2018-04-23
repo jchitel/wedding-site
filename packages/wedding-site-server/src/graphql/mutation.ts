@@ -1,5 +1,5 @@
 import {
-    setRsvpStatus, setPlusOneStatus,
+    setRsvpStatus, setMealChoice, setPlusOneStatus,
     addGuest, editGuest, deleteGuest,
     addNickname, removeNickname,
     addGuestToInvitation, removeGuestFromInvitation,
@@ -35,8 +35,11 @@ type Mutation {
     # Sets the RSVP status of a specific guest by id.
     setRsvpStatus(guestId: Int!, status: RsvpStatus!): Guest!
 
+    # Sets the meal choice of a specific guest by id.
+    setMealChoice(guestId: Int!, choice: RsvpMeal!): Guest!
+
     # Sets the plus one status of a specific guest by id.
-    setPlusOneStatus(guestId: Int!, taking: Boolean!, firstName: String, lastName: String): Guest!
+    setPlusOneStatus(guestId: Int!, taking: Boolean!, firstName: String, lastName: String, mealChoice: RsvpMeal): Guest!
 
     # Adds a new invitation
     # ADMIN ONLY
@@ -97,6 +100,7 @@ type GuestMutation {
 /** Every Mutation field needs a resolver because it's top level */
 export const Mutation = {
     setRsvpStatus,
+    setMealChoice,
     setPlusOneStatus,
     addInvitation,
     editInvitation,

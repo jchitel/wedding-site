@@ -1,6 +1,6 @@
 import React from 'react';
 import { ApolloFetch } from 'apollo-fetch';
-import { notification, Button, Spin, Radio, Checkbox, Input } from 'antd';
+import { notification, Button, Spin, Radio, Checkbox, Input, Select } from 'antd';
 import styles from '../rsvp.less';
 
 
@@ -14,6 +14,7 @@ interface PlusOne {
     taken: boolean;
     firstName: string | null;
     lastName: string | null;
+    mealChoice: string | null;
 }
 
 interface Guest {
@@ -23,6 +24,7 @@ interface Guest {
     status: string;
     givenPlusOne: boolean;
     plusOne: PlusOne | null;
+    mealChoice: string;
 }
 
 interface ManageRsvpState {
@@ -55,11 +57,13 @@ export default class ManageRsvp extends React.PureComponent<ManageRsvpProps, Man
                             firstName
                             lastName
                             status
+                            mealChoice
                             givenPlusOne
                             plusOne {
                                 taken
                                 firstName
                                 lastName
+                                mealChoice
                             }
                         }
                     }
@@ -101,7 +105,8 @@ export default class ManageRsvp extends React.PureComponent<ManageRsvpProps, Man
                 mutation {
                     ${this.state.guests.map((_, i) => `
                         guestRsvp${i}: setRsvpStatus(guestId: ${_.guestId}, status: ${_.status}) { guestId }
-                        ${!_.givenPlusOne ? '' : `guestPlusOne${i}: setPlusOneStatus(guestId: ${_.guestId}, taking: ${_.plusOne!.taken}, firstName: "${_.plusOne!.firstName}", lastName: "${_.plusOne!.lastName}") { guestId }`}
+                        guestMeal${i}: setMealChoice(guestId: ${_.guestId}, choice: ${_.mealChoice}) { guestId }
+                        ${!_.givenPlusOne ? '' : `guestPlusOne${i}: setPlusOneStatus(guestId: ${_.guestId}, taking: ${_.plusOne!.taken}, firstName: ${this.getStringValue(_.plusOne!.firstName)}, lastName: ${this.getStringValue(_.plusOne!.lastName)}, mealChoice: ${_.plusOne!.mealChoice || 'null'}) { guestId }`}
                     `)}
                 }
             `
@@ -113,6 +118,10 @@ export default class ManageRsvp extends React.PureComponent<ManageRsvpProps, Man
             description: 'Thank you for RSVP-ing!',
             duration: 5
         });
+    }
+
+    getStringValue(value: string | null) {
+        return value ? `"${value}"` : 'null';
     }
 
     render() {
@@ -131,9 +140,9 @@ export default class ManageRsvp extends React.PureComponent<ManageRsvpProps, Man
             <span className={styles.subHeader}>Guests</span>
             <p className={styles.loginExplanation}>
                 Below is each guest on your invitation. Please select for each guest whether or not
-                he or she will be attending. {anyPlusOnes && 'If you were given a plus one, please select '
+                he or she will be attending, and the meal choice (optional). {anyPlusOnes && 'If you were given a plus one, please select '
                 + 'whether you will be bringing a plus one, and if so, the first and last name of that person.'} Press <b>submit</b> to
-                submit the information. If anything you see is incorrect, or there is any problem entering this information, please
+                submit the information. If anything you see is incorrect, there is any problem entering this information, or you have <b>any dietary restrictions</b>, please
                 contact jchitel@gmail.com.
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
@@ -151,20 +160,34 @@ function GuestEntry({ guest, onChange }: { guest: Guest, onChange: (guest: Guest
         <span className={styles.address} style={{ marginBottom: 10 }}>{guest.firstName} {guest.lastName}</span>
         <span className={styles.center}>Coming?</span>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Radio.Group onChange={_ => onChange({ ...guest, status: _.target.value })} value={guest.status}>
+            <Radio.Group style={{ marginBottom: 5 }} onChange={_ => onChange({ ...guest, status: _.target.value })} value={guest.status}>
                 <Radio.Button value="ATTENDING">YES</Radio.Button>
                 <Radio.Button value="NOT_ATTENDING">NO</Radio.Button>
             </Radio.Group>
         </div>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-            {guest.givenPlusOne && guest.plusOne
-                && <Checkbox checked={guest.plusOne.taken} onChange={_ => onChange({ ...guest, plusOne: { ...guest.plusOne!, taken: _.target.checked } })}>Taking Plus One?</Checkbox>}
+            <Select onChange={_ => onChange({ ...guest, mealChoice: _ as string })} value={guest.mealChoice}>
+                <Select.Option value="NO_MEAL">No meal choice</Select.Option>
+                <Select.Option value="BEEF">Beef short rib</Select.Option>
+                <Select.Option value="CHICKEN">Chicken</Select.Option>
+                <Select.Option value="SALMON">Salmon</Select.Option>
+            </Select>
         </div>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
+            {guest.givenPlusOne && guest.plusOne
+                && <Checkbox style={{ marginBottom: 5 }} checked={guest.plusOne.taken} onChange={_ => onChange({ ...guest, plusOne: { ...guest.plusOne!, taken: _.target.checked } })}>Taking Plus One?</Checkbox>}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             {guest.givenPlusOne && guest.plusOne && guest.plusOne.taken
                 && <>
-                    <Input value={guest.plusOne.firstName} onChange={_ => onChange({ ...guest, plusOne: { ...guest.plusOne!, firstName: _.currentTarget.value } })} placeholder="First Name" />
-                    <Input value={guest.plusOne.lastName} onChange={_ => onChange({ ...guest, plusOne: { ...guest.plusOne!, lastName: _.currentTarget.value } })} placeholder="Last Name" />
+                    <Input style={{ marginBottom: 5 }} value={guest.plusOne.firstName} onChange={_ => onChange({ ...guest, plusOne: { ...guest.plusOne!, firstName: _.currentTarget.value } })} placeholder="First Name" />
+                    <Input style={{ marginBottom: 5 }} value={guest.plusOne.lastName} onChange={_ => onChange({ ...guest, plusOne: { ...guest.plusOne!, lastName: _.currentTarget.value } })} placeholder="Last Name" />
+                    <Select style={{ marginBottom: 5 }} onChange={_ => onChange({ ...guest, plusOne: { ...guest.plusOne!, mealChoice: _ as string } })} value={guest.plusOne!.mealChoice || 'NO_MEAL'}>
+                        <Select.Option value="NO_MEAL">No meal choice</Select.Option>
+                        <Select.Option value="BEEF">Beef short rib</Select.Option>
+                        <Select.Option value="CHICKEN">Chicken</Select.Option>
+                        <Select.Option value="SALMON">Salmon</Select.Option>
+                    </Select>
                 </>}
         </div>
     </div>

@@ -2,7 +2,7 @@ import { makeExecutableSchema } from 'graphql-tools';
 import { typeDef as queryTypeDef, Query } from './query';
 import { typeDef as mutationTypeDef, Mutation, InvitationMutation, GuestMutation } from './mutation';
 import { typeDef as invitationTypeDef, Invitation } from './invitation';
-import { typeDef as guestTypeDef, RsvpStatus, GuestOwner, GuestType, Guest } from './guest';
+import { typeDef as guestTypeDef, RsvpStatus, GuestOwner, GuestType, Guest, RsvpMeal } from './guest';
 import { typeDef as statsTypeDef } from './stats';
 import SqlClient from '../data/sql-client';
 
@@ -26,6 +26,7 @@ const schema = makeExecutableSchema({
         Mutation,
         Invitation,
         RsvpStatus,
+        RsvpMeal,
         Guest,
         GuestOwner,
         GuestType,

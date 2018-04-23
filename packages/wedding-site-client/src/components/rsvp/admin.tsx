@@ -65,6 +65,7 @@ interface Guest {
     status: string;
     givenPlusOne: boolean;
     plusOne: PlusOne | null;
+    mealChoice: string;
     whoseGuest: string;
     guestType: string;
     lastUpdatedByGuestTimestamp: string;
@@ -75,6 +76,7 @@ interface PlusOne {
     taken: boolean;
     firstName: string | null;
     lastName: string | null;
+    mealChoice: string | null;
 }
 
 interface AdminProps {
@@ -349,7 +351,7 @@ class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
     }
 
     submitGuest = async () => {
-        const { guestId, firstName, lastName, givenPlusOne, whoseGuest, guestType, plusOne, status } = this.state.guestToEdit!;
+        const { guestId, firstName, lastName, givenPlusOne, whoseGuest, guestType, plusOne, status, mealChoice } = this.state.guestToEdit!;
         const { nicknamesToAdd, nicknamesToDelete } = this.state;
         let response = await this.props.fetch({
             query: `
@@ -374,11 +376,21 @@ class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
             });
             if (response.errors) return this.handleError(response.errors);
         }
+        if (existingGuest.mealChoice !== mealChoice) {
+            response = await this.props.fetch({
+                query: `
+                    mutation {
+                        setMealChoice(guestId: ${guestId}, choice: ${mealChoice}) { guestId }
+                    }
+                `
+            });
+            if (response.errors) return this.handleError(response.errors);
+        }
         if (plusOne) {
             response = await this.props.fetch({
                 query: `
                     mutation {
-                        setPlusOneStatus(guestId: ${guestId}, taking: ${plusOne.taken}, firstName: ${plusOne.firstName ? `"${plusOne.firstName}"` : 'null'}, lastName: ${plusOne.lastName ? `"${plusOne.lastName}"` : 'null'}) { guestId }
+                        setPlusOneStatus(guestId: ${guestId}, taking: ${plusOne.taken}, firstName: ${plusOne.firstName ? `"${plusOne.firstName}"` : 'null'}, lastName: ${plusOne.lastName ? `"${plusOne.lastName}"` : 'null'}, mealChoice: ${plusOne.mealChoice || 'null'}) { guestId }
                     }
                 `
             });
@@ -427,7 +439,7 @@ class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
         guestToEdit: {
             ...this.state.guestToEdit!,
             givenPlusOne: event.target.checked,
-            plusOne: this.state.guestToEdit!.plusOne || { taken: false, firstName: null, lastName: null }
+            plusOne: this.state.guestToEdit!.plusOne || { taken: false, firstName: null, lastName: null, mealChoice: null }
         }
     });
 
@@ -447,6 +459,16 @@ class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
             plusOne: {
                 ...this.state.guestToEdit!.plusOne!,
                 [key]: event.currentTarget.value
+            }
+        }
+    });
+
+    editPlusOneSelect = (key: keyof PlusOne) => (value: SelectValue) => this.setState({
+        guestToEdit: {
+            ...this.state.guestToEdit!,
+            plusOne: {
+                ...this.state.guestToEdit!.plusOne!,
+                [key]: value as string
             }
         }
     });
@@ -473,6 +495,7 @@ class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
         guestType: 'FAMILY',
         givenPlusOne: false,
         plusOne: null,
+        mealChoice: 'NO_MEAL',
         nicknames: [],
         lastUpdatedByGuestTimestamp: '',
         lastUpdatedByAdminTimestamp: ''
@@ -481,7 +504,7 @@ class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
     openToAdd = () => this.setState({ showModal: true, guestToEdit: this.getNewGuest(), nicknamesToAdd: [], nicknamesToDelete: [], addingNickname: '', adding: true });
 
     addGuest = async () => {
-        const { firstName, lastName, givenPlusOne, whoseGuest, guestType, plusOne, status } = this.state.guestToEdit!;
+        const { firstName, lastName, givenPlusOne, whoseGuest, guestType, plusOne, status, mealChoice } = this.state.guestToEdit!;
         const { nicknamesToAdd } = this.state;
         let response = await this.props.fetch({
             query: `
@@ -505,11 +528,21 @@ class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
             });
             if (response.errors) return this.handleError(response.errors);
         }
+        if (mealChoice !== 'NO_MEAL') {
+            response = await this.props.fetch({
+                query: `
+                    mutation {
+                        setMealChoice(guestId: ${guestId}, choice: ${mealChoice}) { guestId }
+                    }
+                `
+            });
+            if (response.errors) return this.handleError(response.errors);
+        }
         if (plusOne) {
             response = await this.props.fetch({
                 query: `
                     mutation {
-                        setPlusOneStatus(guestId: ${guestId}, taking: ${plusOne.taken}, firstName: ${plusOne.firstName ? `"${plusOne.firstName}"` : 'null'}, lastName: ${plusOne.lastName ? `"${plusOne.lastName}"` : 'null'}) { guestId }
+                        setPlusOneStatus(guestId: ${guestId}, taking: ${plusOne.taken}, firstName: ${plusOne.firstName ? `"${plusOne.firstName}"` : 'null'}, lastName: ${plusOne.lastName ? `"${plusOne.lastName}"` : 'null'}, mealChoice: ${plusOne.mealChoice || 'null'}) { guestId }
                     }
                 `
             });
@@ -554,6 +587,13 @@ class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
                             <Select.Option value="ATTENDING">Attending</Select.Option>
                             <Select.Option value="NOT_ATTENDING">Not attending</Select.Option>
                         </Select>
+                        <h3>Meal Choice</h3>
+                        <Select value={guestToEdit.mealChoice} onChange={this.editGuestSelect('mealChoice')}>
+                            <Select.Option value="NO_MEAL">No meal</Select.Option>
+                            <Select.Option value="BEEF">Beef short rib</Select.Option>
+                            <Select.Option value="CHICKEN">Chicken</Select.Option>
+                            <Select.Option value="SALMON">Salmon</Select.Option>
+                        </Select>
                         <h3>Owner</h3>
                         <Select value={guestToEdit.whoseGuest} onChange={this.editGuestSelect('whoseGuest')}>
                             <Select.Option value="BRIDE">Bride</Select.Option>
@@ -581,6 +621,12 @@ class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
                             {guestToEdit.plusOne.taken && <>
                                 <Input placeholder="First name" value={guestToEdit.plusOne.firstName} onChange={this.editPlusOneInput('firstName')} />
                                 <Input placeholder="Last name" value={guestToEdit.plusOne.lastName} onChange={this.editPlusOneInput('lastName')} />
+                                <Select value={guestToEdit.plusOne.mealChoice || 'NO_MEAL'} onChange={this.editPlusOneSelect('mealChoice')}>
+                                    <Select.Option value="NO_MEAL">No meal</Select.Option>
+                                    <Select.Option value="BEEF">Beef short rib</Select.Option>
+                                    <Select.Option value="CHICKEN">Chicken</Select.Option>
+                                    <Select.Option value="SALMON">Salmon</Select.Option>
+                                </Select>
                             </>}
                         </>}
                         {!adding && <>
