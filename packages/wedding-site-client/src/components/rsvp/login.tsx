@@ -41,12 +41,12 @@ export default class Login extends React.PureComponent<LoginProps, LoginState> {
                 if (parsed.errorCode === ErrorCode.DUPLICATE_AUTH_RECORDS_FOUND) {
                     loginErrorText = 'What are the odds? Someone else had the exact same information as you. Please try again with a different name.';
                 } else if (parsed.errorCode == ErrorCode.NO_AUTH_RECORD_FOUND) {
-                    loginErrorText = 'That information did not match any invitation. Please try again with a different name or house number, or contact jchitel@gmail.com.';
+                    loginErrorText = 'That information did not match any invitation. Please try again with a different name or house number, or contact jchitel@gmail.com or (414)-861-0752.';
                 } else {
-                    loginErrorText = 'Something went wrong. Please try again or contact jchitel@gmail.com.';
+                    loginErrorText = 'Something went wrong. Please try again or contact jchitel@gmail.com or (414)-861-0752.';
                 }
             } catch {
-                loginErrorText = 'Something went wrong. Please try again or contact jchitel@gmail.com.';
+                loginErrorText = 'Something went wrong. Please try again or contact jchitel@gmail.com or (414)-861-0752.';
             }
             notification.error({
                 message: 'Error',
@@ -78,7 +78,7 @@ export default class Login extends React.PureComponent<LoginProps, LoginState> {
                 </p>
                 <p className={styles.loginExplanation}>
                     If, for some reason, this is not working for you,
-                    please contact <b>jchitel@gmail.com</b>.
+                    please contact <b>jchitel@gmail.com</b> or <b>(414)-861-0752</b>.
                 </p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around', minWidth: 400, maxWidth: '90%', margin: 'auto', marginBottom: 15 }}>
                     <Input

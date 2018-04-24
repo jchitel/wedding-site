@@ -84,7 +84,7 @@ export default class ManageRsvp extends React.PureComponent<ManageRsvpProps, Man
     handleError = () => {
         notification.error({
             message: 'Error',
-            description: 'Something went wrong. Please wait and try again or contact jchitel@gmail.com',
+            description: 'Something went wrong. Please wait and try again or contact jchitel@gmail.com or (414)-861-0752',
             duration: 0
         });
         this.setState({ loading: false, error: true });
@@ -143,7 +143,7 @@ export default class ManageRsvp extends React.PureComponent<ManageRsvpProps, Man
                 he or she will be attending, and the meal choice (optional). {anyPlusOnes && 'If you were given a plus one, please select '
                 + 'whether you will be bringing a plus one, and if so, the first and last name of that person.'} Press <b>submit</b> to
                 submit the information. If anything you see is incorrect, there is any problem entering this information, or you have <b>any dietary restrictions</b>, please
-                contact jchitel@gmail.com.
+                contact jchitel@gmail.com or (414)-861-0752.
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
                 {guests.map(g => <GuestEntry key={g.guestId} guest={g} onChange={this.onGuestChange(g.guestId)} />)}
