@@ -31,7 +31,9 @@ const FULL_RSVPS_QUERY = `
                     taken
                     firstName
                     lastName
+                    mealChoice
                 }
+                mealChoice
                 whoseGuest
                 guestType
                 lastUpdatedByGuestTimestamp
