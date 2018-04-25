@@ -46,10 +46,14 @@ export default class Countdown extends React.PureComponent<{}, ICountdownState> 
         return (
             <>
                 <span className={styles.countdown} style={{ marginTop: 20 }}>
-                    <span className={styles.unit}>{days} Days</span>
-                    <span className={styles.unit}>{hours} Hours</span>
-                    <span className={styles.unit}>{minutes} Minutes</span>
-                    <span className={styles.unit}>{seconds} Seconds</span>
+                    <span className={styles.unit} style={{ minWidth: 100 }}>{days}</span>
+                    <span className={styles.unit}>Days</span>
+                    <span className={styles.unit} style={{ minWidth: 100 }}>{hours}</span>
+                    <span className={styles.unit}>Hours</span>
+                    <span className={styles.unit} style={{ minWidth: 100 }}>{minutes}</span>
+                    <span className={styles.unit}>Minutes</span>
+                    <span className={styles.unit} style={{ minWidth: 100 }}>{seconds}</span>
+                    <span className={styles.unit}>Seconds</span>
                 </span>
                 <span className={commonStyles.centerText} style={{ fontSize: '2em', fontFamily: 'parchment-print' }}>Until</span>
                 <span className={styles.countdown}>Saturday, June 23, 2018</span>
