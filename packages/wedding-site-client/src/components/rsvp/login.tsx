@@ -36,10 +36,12 @@ export default class Login extends React.PureComponent<LoginProps, LoginState> {
         if (response.errors) {
             const error = response.errors[0];
             let loginErrorText: string;
+            let duration = 15;
             try {
                 const parsed = JSON.parse(error.message);
                 if (parsed.errorCode === ErrorCode.DUPLICATE_AUTH_RECORDS_FOUND) {
-                    loginErrorText = 'What are the odds? Someone else had the exact same information as you. Please try again with a different name.';
+                    loginErrorText = 'That login matched more than one invitation! You are probably at a residence that received multiple invites. Please try again using a more specific name, such as a first name or a full name.';
+                    duration = 30;
                 } else if (parsed.errorCode == ErrorCode.NO_AUTH_RECORD_FOUND) {
                     loginErrorText = 'That information did not match any invitation. Please try again with a different name or house number, or contact jchitel@gmail.com or (414)-861-0752.';
                 } else {
@@ -51,7 +53,7 @@ export default class Login extends React.PureComponent<LoginProps, LoginState> {
             notification.error({
                 message: 'Error',
                 description: loginErrorText,
-                duration: 15
+                duration
             });
         } else {
             this.props.onToken(response.data.token);

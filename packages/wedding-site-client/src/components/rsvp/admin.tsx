@@ -593,6 +593,7 @@ class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
                             <Select.Option value="BEEF">Beef short rib</Select.Option>
                             <Select.Option value="CHICKEN">Chicken</Select.Option>
                             <Select.Option value="SALMON">Salmon</Select.Option>
+                            <Select.Option value="KIDS">Kids meal</Select.Option>
                         </Select>
                         <h3>Owner</h3>
                         <Select value={guestToEdit.whoseGuest} onChange={this.editGuestSelect('whoseGuest')}>
@@ -626,6 +627,7 @@ class GuestList extends React.PureComponent<GuestListProps, GuestListState> {
                                     <Select.Option value="BEEF">Beef short rib</Select.Option>
                                     <Select.Option value="CHICKEN">Chicken</Select.Option>
                                     <Select.Option value="SALMON">Salmon</Select.Option>
+                                    <Select.Option value="KIDS">Kids meal</Select.Option>
                                 </Select>
                             </>}
                         </>}

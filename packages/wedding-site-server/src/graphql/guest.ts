@@ -89,6 +89,8 @@ enum RsvpMeal {
     CHICKEN
     # Salmon
     SALMON
+    # Kids meal
+    KIDS
 }
 `;
 
@@ -118,7 +120,8 @@ export const RsvpMeal = {
     NO_MEAL: 'no_meal',
     BEEF: 'beef',
     CHICKEN: 'chicken',
-    SALMON: 'salmon'
+    SALMON: 'salmon',
+    KIDS: 'kids'
 };
 
 export const invitationGuests: IFieldResolver<Invitation, IWeddingSiteContext> = async (source, _args, context) => {

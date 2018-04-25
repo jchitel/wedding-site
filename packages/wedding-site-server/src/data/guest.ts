@@ -5,7 +5,7 @@ import { PoolClient } from 'pg';
 export type GuestStatus = 'no_rsvp' | 'attending' | 'not_attending';
 export type GuestOwner = 'bride' | 'groom';
 export type GuestType = 'family' | 'family_friend' | 'friend' | 'party';
-export type RsvpMeal = 'no_meal' | 'beef' | 'chicken' | 'salmon';
+export type RsvpMeal = 'no_meal' | 'beef' | 'chicken' | 'salmon' | 'kids';
 
 export interface Guest {
     guestId: number;
