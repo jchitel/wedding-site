@@ -1,4 +1,3 @@
-import { rootAuth } from './auth';
 import { rootInvitation, allInvitations, byInvitationId, byNameAndHouseNumber } from './invitation';
 import { guestRsvpStats, invitationStats } from './stats';
 
@@ -6,11 +5,6 @@ import { guestRsvpStats, invitationStats } from './stats';
 export const typeDef = `
 # Top-level Query type
 type Query {
-    # Using a name (any combination of first and last name, case insensitive)
-    # and a house number (must exactly match the house number from the invite)
-    # authenticate the user and return a JWT for use in subsequent requests.
-    authenticate(name: String!, houseNumber: String!): String!
-
     # Retrieve a user's RSVP according to current authorization.
     # Admin authorization will throw an error.
     rsvp: Invitation!
@@ -45,7 +39,6 @@ type Query {
 `;
 
 export const Query = {
-    authenticate: rootAuth,
     rsvp: rootInvitation,
     rsvps: allInvitations,
     rsvpByInvitationId: byInvitationId,
