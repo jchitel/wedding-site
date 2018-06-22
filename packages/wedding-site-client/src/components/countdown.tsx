@@ -10,6 +10,7 @@ interface ICountdownState {
     hours: number;
     minutes: number;
     seconds: number;
+    since: boolean;
 }
 
 export default class Countdown extends React.PureComponent<{}, ICountdownState> {
@@ -24,7 +25,9 @@ export default class Countdown extends React.PureComponent<{}, ICountdownState> 
     }
 
     getValues() {
-        const diff = ceremonyTime.getTime() - (new Date()).getTime();
+        let diff = ceremonyTime.getTime() - (new Date()).getTime();
+        const since = diff < 0;
+        diff = Math.abs(diff);
         const seconds = Math.floor(diff / 1000);
         const minutes = Math.floor(seconds / 60);
         const hours = Math.floor(minutes / 60);
@@ -34,14 +37,15 @@ export default class Countdown extends React.PureComponent<{}, ICountdownState> 
             days,
             hours: hours - days * 24,
             minutes: minutes - hours * 60,
-            seconds: seconds - minutes * 60
+            seconds: seconds - minutes * 60,
+            since
         };
     }
 
     updateValues = () => this.setState(this.getValues());
 
     render() {
-        const { days, hours, minutes, seconds } = this.state;
+        const { days, hours, minutes, seconds, since } = this.state;
 
         return (
             <>
@@ -63,7 +67,9 @@ export default class Countdown extends React.PureComponent<{}, ICountdownState> 
                         <span>Seconds</span>
                     </div>
                 </span>
-                <span className={commonStyles.centerText} style={{ fontSize: '2em', fontFamily: 'parchment-print' }}>Until</span>
+                <span className={commonStyles.centerText} style={{ fontSize: '2em', fontFamily: 'parchment-print' }}>
+                    {since ? 'Since' : 'Until'}
+                </span>
                 <span className={styles.countdown}>Saturday, June 23, 2018</span>
                 <span className={styles.countdown}>2:00 PM</span>
             </>
