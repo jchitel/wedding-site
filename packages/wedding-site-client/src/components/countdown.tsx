@@ -3,7 +3,7 @@ import commonStyles from '../styles/style.less';
 import styles from './countdown.less';
 
 
-const ceremonyTime = new Date(1529780400000);
+const ceremonyTime = new Date(1529782440000);
 
 interface ICountdownState {
     days: number;
