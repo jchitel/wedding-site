@@ -71,7 +71,7 @@ export default class Countdown extends React.PureComponent<{}, ICountdownState> 
                     {since ? 'Since' : 'Until'}
                 </span>
                 <span className={styles.countdown}>Saturday, June 23, 2018</span>
-                <span className={styles.countdown}>2:00 PM</span>
+                <span className={styles.countdown}>2:34 PM</span>
             </>
         );
     }
