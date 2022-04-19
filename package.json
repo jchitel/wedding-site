@@ -1,12 +1,13 @@
 {
   "name": "wedding-site",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "description": "Website for my 2018 wedding",
   "scripts": {
-    "deploy": "lerna bootstrap && lerna run deploy && node ./scripts/deploy.js",
-    "build": "lerna bootstrap && lerna run build",
-    "local": "node ./scripts/local.js"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "repository": {
     "type": "git",
@@ -18,10 +19,17 @@
     "url": "https://github.com/jchitel/wedding-site/issues"
   },
   "homepage": "https://github.com/jchitel/wedding-site#readme",
+  "dependencies": {
+    "next": "12.1.5",
+    "react": "18.0.0",
+    "react-dom": "18.0.0"
+  },
   "devDependencies": {
-    "archiver": "^2.1.1",
-    "express": "^4.16.3",
-    "fs-extra": "^5.0.0",
-    "lerna": "^2.10.1"
+    "@types/node": "17.0.25",
+    "@types/react": "18.0.5",
+    "@types/react-dom": "18.0.1",
+    "eslint": "8.13.0",
+    "eslint-config-next": "12.1.5",
+    "typescript": "4.6.3"
   }
 }
