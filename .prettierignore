@@ -1,0 +1,5 @@
+# tsconfig.json has a commented format that is screwed up by prettier
+tsconfig.json
+
+# Ignored files
+/.next

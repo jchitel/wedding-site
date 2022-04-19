@@ -1,175 +1,90 @@
 # Website for my 2018 wedding
 
-[![Build Status](https://travis-ci.org/jchitel/wedding-site.svg?branch=master)](https://travis-ci.org/jchitel/wedding-site)
+This website is a [Next.js](https://nextjs.org/) app hosted in
+[Vercel](https://vercel.com/).
 
-This website is a React app hosted in AWS Lambda with an Express backend.
+The public site is accessible from https://www.chitelwedding2018.com
+(http://chitelwedding2018.com _should_ redirect; if it doesn't,
+[please file an issue](https://github.com/jchitel/wedding-site/issues/new)!).
 
-The public site is accessible from https://www.chitelwedding2018.com (http://chitelwedding.com will redirect).
+This website is continuing to be maintained by me even after my wedding is over!
+I'm trying to keep it up-to-date with the times as the web progresses into the
+future. I'm sure that in 2030 this site will be using WebAssembly, VR, and a
+WebTorrent-based decentralized hosting system! For now, I'll have to put up with
+SSG, boring 2D content, and a conventional hosting platform...
 
-## Structure
+If you'd like to see what the website originally looked like in 2018, see here!
+(todo: get link)
 
-The site is composed of two parts: a server and a client bundle. The server exists
-in `/src/` (ignoring `/src/site/`), and the client exists in `/src/site/`. The server
-includes a few files for setting up the Express app, as well as a separate entry point
-file for the Lambda deployment. The site contains an `index.html` file, some Less styles,
-and several React component files, as well as a client-side entry point. All code is
-written in TypeScript (barring obvious exceptions like styles and html).
+## Legacy
 
-## Build and Deployment
+Obviously, it's not 2018 anymore. I am maintaining this project because it is
+the first website that I built from scratch and actually _finished_, and that
+people actually _used_! I want to make sure that it still looks good as web dev
+progresses into the future, while still maintaining the same content and
+functionality.
 
-For the sake of simplicity, the site bundle is built during deployment and served
-statically, rather than being rendered on the server side.
+When I originally built the site, I intended to leave it hosted for the
+foreseeable future as a shining example of my best work. 4 years later, I loaded
+the site again and was truly horrified by what I saw.
 
-### Building
+To give 25-year-old Jake some credit, there is a lot that was done right, using
+solutions that are still popular today (in some cases even more popular!):
 
-There are two elements to the build process:
-- Transpiling server typescript
-- Compiling client bundle
+-   **React!**
+-   **TypeScript!**
+-   **GraphQL!**
+-   **Serverless**
+    -   (I did serverless by hand, while most people today do serverless via a
+        platform like Vercel that does the configuration for you.)
+-   **PostgreSQL**
+-   **Mobile-first**
+-   **Webpack**
+    -   (I wouldn't use Webpack today, but at the time Parcel was the new
+        hotness. I decided to do the mature thing and stick with the proven
+        solution.)
+-   **Monorepo**
+    -   (Next.js would have negated the need for this, but this was still a
+        clean solution at the time.)
 
-#### Server Transpilation
+However, there was plenty that was done wrong. I'll keep this brief to avoid my
+tendency of embarking on an essay to defend my positions on each of these items.
+The reason I went with these at the time was effectively because I simply didn't
+know better, which is fine. I know better now, and I will continue to improve!
 
-To transpile the server, the standard TypeScript compiler `tsc` is used. By default,
-`tsc` will use the repository's `/tsconfig.json` file for transpiler configuration.
-The server source files are transpiled and written 1:1 to the `/build/` directory.
-The transpiler is configured to output to ES2015, which is compatible with the
-currently used Node runtime version in Lambda (Node v6.10).
+-   **Express** - I have certain opinions about Express, and at some point I
+    think it would be fun to do some research and write a blog post about why
+    I'm not really a fan.
+-   **Skeumorphic Design** - Our wedding invites were based on the Marauder's
+    Map from Harry Potter, so I thought it would be neat to make the site look
+    like the Marauder's Map too. I used a parchment image for the site
+    background and handwriting-like fonts. The funny thing is that even at the
+    time I thought it was a bit 2005, but I did it anyway. When I fix this I'm
+    going to pick a basic flat color scheme and use built-in browser fonts to
+    keep things clean and simple.
+-   **Just... Bad Design** - Design has never been my strong-suit, but I
+    white-knuckled my way through it. The result was passable, but far from
+    professional. I should have put aside my pride and just used a template.
+    Today, I have things like Tailwind UI and Refactoring UI to make these sorts
+    of things easier for me, but obviously those didn't exist back then.
+-   **Less?** - So I chose to use Less for styling. This is a funny/interesting
+    story so I'll go into more detail here. At the time I was annoyed that we
+    still used a preprocessor at my employer, when all the _cool kids_ were
+    using CSS-in-JS, the new hotness for styling in React. I started this
+    project using vanilla CSS-in-JS via the `style` attribute, but discovered
+    pretty quickly that that pattern is actually pretty gnarly to maintain. I
+    then tried to use a CSS-in-JS framework like styled-components or emotion
+    instead, but I was unsatisfied with all of the available solutions at the
+    time, so I bit the bullet and just went with regular CSS. However, I
+    couldn't just use regular vanilla CSS either. "This isn't 2010," I told
+    myself. "I have to distinguish this as modern _somehow_." So I decided I
+    _had_ to have CSS modules. Unfortunately Webpack support for CSS modules has
+    always been kinda trash, so after much frustration I ended up deciding to
+    use CSS module support provided by a preprocessor. I picked Less instead of
+    Sass out of spite, but at face value, I had landed right back where I
+    started... React really threw a wrench in how people do styling, and it took
+    a long time for the dust to settle and for a proper set of solutions to
+    emerge. Today, a lot of people still swear by CSS-in-JS solutions, but I
+    have drunk the Tailwind kool-aid and I _will_ die on this hill.
 
-#### Client Bundle Compilation
-
-The client bundle is compiled using Webpack. Another option considered was Parcel,
-which is a recent project that opts for convention over configuration so that
-bundle compilation works out of the box. However, several attempts to use it have
-resulted in bugs and unexpected behavior, leading to the conclusion that it is
-simply not mature enough yet. Webpack is a far more mature option that is moving
-toward less and less configuration all the time. It was relatively painless to set up.
-
-The Webpack build points to `/src/site/index.tsx` as an entry point. All TypeScript,
-Less, image, and font files imported from there are processed by Webpack to output
-individual bundle files:
-- `/build/bundle/main.js` (compile target for all typescript code)
-- `/build/bundle/index.css` (compile target for all Less/CSS code)
-- `/build/bundle/{hash}.{jpg|png|ttf}` (compile target for all static resources)
-
-Additionally, Webpack's `HtmlWebpackPlugin` is used to construct an `index.html` file
-that imports all of these dynamically generated resources. The template for this exists
-at `/src/site/index.html`. The configuration for this plugin also includes the site's
-`favicon.ico` file.
-
-#### Build Process
-
-The build process will run `tsc` to compile the server, followed by `webpack` to compile
-the client. These can effectively be run in any order.
-
-### Deployment
-
-In addition to the build steps, deployment also requires setting up a Lambda deployment
-package, and configuring production settings for Webpack.
-
-#### Webpack Production Settings
-
-Starting with Webpack 4, "production" mode can be turned on, which automatically enables
-several settings for optimizing production builds, including code minification and dead
-code elimination.
-
-#### Lambda Deployment Package
-
-For anything other than a single file, Lambda requires a zip archive containing the full
-source of the function code to be deployed. This archive should have the Lambda handler
-file at the root, so that it can be accessible via Lambda's "handler" configuration. For
-my purposes, the lambda handler exists in the `/build/index.js` file, at the `handler`
-export (configured as `index.handler`).
-
-Because the server uses external dependencies, those dependencies need to be included in
-the package. To facilitate this, the `/build/` directory has its own `package.json` and
-`yarn.lock`. To set up the deployment package, `yarn` is run with `/build/` as the CWD,
-which causes the build specific dependencies to be installed at `/build/node_modules/`.
-
-Once the server is transpiled, the client bundle is compiled, and the dependencies are
-installed, the deployment zips up the whole `/build/` directory to `/build/lambda.zip`.
-This is the final deployment package.
-
-### Travis Builds
-
-In order to run the deployment process as part of a CI deployment, a Travis configuration
-is set up for this repository. This configuration is set up to run on pushes to the master
-branch. This is the process:
-
-1. Clone the repository at the pushed commit. (base configuration)
-2. Install yarn dependencies. (because the language is set to "node_js" and we have a "yarn.lock")
-3. Run `npm run deploy`. (specifically configured script in `.travis.yml`, calls script defined in 'package.json')
-   1. Run tsc to build the server files.
-   1. Run Webpack to build the client bundle files.
-   2. Run the deployment script to install build dependencies and create the deployment package.
-4. Deploy the package to AWS Lambda using the config settings in `.travis.yml`.
-
-### Build Process
-
-**TODO**: Go into detail here
-
-### Architecture
-
-**TODO**: Go into detail here
-
-### Full Process
-
-**TODO**: Update this
-
-Given the above context, this is the full process:
-
-1. Make code changes
-2. Commit, push to master
-3. Travis build starts
-4. Repo clone set up
-5. Build script run, generating 'dist/bundle.js' and 'index.html'.
-6. Force-push to 'gh-pages' branch.
-7. Travis build complete.
-8. Navigate to http://chitelwedding2018.com to view the deployed result.
-
-## Development
-
-To run the development site, do the following:
-
-1. Ensure Node.js >= 8 and Yarn (`npm install -g yarn`) are installed.
-2. `git clone https://github.com/jchitel/wedding-site.git && cd wedding-site`
-3. `npm run local`
-4. Navigate to `localhost:1235`
-5. To get the Google Maps frame to work locally, you can configure your `hosts` file to
-   have `http://www.chitelwedding2018.com` point to `127.0.0.1` or another loopback address.
-   You can then navigate to `www.chitelwedding2018.com:1235`.
-
-## TODO
-
-- [x] Use a dev server instead of a static local file
-- [x] Add optimizations (uglify, etc.) to production webpack configuration
-- [x] Add source maps support to webpack configuration
-- [ ] Create site skeleton:
-  - [ ] UNDER CONSTRUCTION banner
-  - [x] Title
-  - [x] Countdown
-  - [x] TOC (w/ links)
-  - [x] Venue info (w/ links)
-  - [x] Hotel info (w/ links)
-  - [x] Embedded Google Map
-    - [ ] Display markers
-    - [ ] Allow input for directions
-  - [x] Links to registries
-  - [ ] RSVP
-  - [ ] Info about couple
-  - [ ] Info about wedding party
-  - [ ] Other miscellaneous wedding info
-  - [ ] Pictures
-  - ...?
-- [ ] Set up AWS resources for RSVP
-  - [ ] RSVP Database
-  - [ ] SMS/Email subscriptions
-  - [ ] Lambda logic
-- [x] Add countdown logic
-- [ ] Add Google Maps logic
-- [ ] Add RSVP logic
-  - [ ] Populate DB with guest info (via admin console)
-  - [ ] "login" with name and street number
-  - [ ] Subscription setup
-  - [ ] RSVP Status update
-- [ ] Add details about couple and wedding party (mainly manual)
-- [ ] Styling (just delaying the inevitable)
-- [ ] Determine what else should be added?
+See the old README [here](./README.old.md)!

@@ -1,0 +1,13 @@
+# https://prettier.io/docs/en/options.html
+# I would prefer to use all of prettier's defaults, but unfortunately I have issues with a few of them.
+# This configuration will always be as small as possible.
+
+# The web is the *only* ecosystem I've seen that seems to prefer a tab width of 2.
+# All other ecosystems I've used (Rust, .NET, Python) prefer a tab width of 4.
+# From a practical perspective, I simply find a tab width of 2 to be very difficult to read beyond ~3 levels of indentation.
+# I could perhaps get used to it, but since JS is not the only language I use, I'd prefer to be consistent.
+tabWidth: 4
+
+# I don't believe I have any Markdown that will be run through a "linebreak-sensitive" renderer, so this seems like a sensible option.
+# It makes it easier to read raw markdown in contexts that don't support soft wrapping.
+proseWrap: always
