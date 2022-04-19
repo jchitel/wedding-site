@@ -87,4 +87,4 @@ know better, which is fine. I know better now, and I will continue to improve!
     emerge. Today, a lot of people still swear by CSS-in-JS solutions, but I
     have drunk the Tailwind kool-aid and I _will_ die on this hill.
 
-See the old README [here](./README.old.md)!
+See the old README (annotated by 2022 Jake) [here](./README.old.md)!
