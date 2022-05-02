@@ -13,3 +13,24 @@
         src: url("/parchment-print.ttf");
     }
 }
+
+@layer utilities {
+    .words-tighter {
+        word-spacing: -0.25em;
+    }
+    .words-tight {
+        word-spacing: -0.125em;
+    }
+    .words-normal {
+        word-spacing: 0em;
+    }
+    .words-wide {
+        word-spacing: 0.125em;
+    }
+    .words-wider {
+        word-spacing: 0.25em;
+    }
+    .words-widest {
+        word-spacing: 0.5em;
+    }
+}

@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import cx from "classnames";
 import { Popover, Transition } from "@headlessui/react";
 import { MenuIcon, XIcon } from "@heroicons/react/outline";
+import { differenceInDays } from "date-fns";
 
 const navigation = [
     { name: "Pricing", href: "#" },
@@ -12,28 +13,34 @@ const navigation = [
 export function Header() {
     return (
         <header>
-            <Popover className="relative bg-blue-900">
+            <Popover className="relative bg-blue-900 border-t-4 border-t-yellow-500">
                 {/** Flex container for the items in the header */}
                 <div
                     className={cx(
-                        "flex justify-end md:justify-center items-center",
+                        "flex justify-between md:justify-center items-start",
                         "max-w-7xl",
                         "mx-auto px-4 sm:px-6 lg:px-8 py-6 md:space-x-10"
                     )}
                 >
-                    <MobileHeaderToggle />
-                    <BigScreenHeaderItems />
+                    <MobileNavToggle />
+                    <HeaderContent />
+                    <div className="md:hidden" />
                 </div>
 
-                <MobileHeaderPanel />
+                <MobileNav />
             </Popover>
         </header>
     );
 }
 
-function MobileHeaderToggle() {
+/**
+ * Menu button that opens the mobile navigation menu.
+ * This button is only visible up to `md` screens.
+ */
+function MobileNavToggle() {
     return (
-        <div className="-mr-2 -my-2 md:hidden">
+        /* The `w-0` allows the header content to be centered in the overall container, ignoring the width of this button */
+        <div className="-mr-2 -my-2 md:hidden w-0">
             <Popover.Button
                 className={cx(
                     "inline-flex items-center justify-center",
@@ -50,15 +57,54 @@ function MobileHeaderToggle() {
     );
 }
 
-function BigScreenHeaderItems() {
+const ceremonyTime = new Date(1529782440000);
+const today = new Date();
+
+function HeaderContent() {
+    // date-fns has an `intervalToDuration()` that would be really useful here but unfortunately
+    // the units it returns can't be customized. We want things in days but it returns years/months/days.
+    // Perhaps in the second version of the site I can change the countdown format to allow for that.
+    const days = differenceInDays(today, ceremonyTime);
+
     return (
-        <Popover.Group as="nav" className="hidden md:flex space-x-10">
-            {navigation.map((item) => (
-                <HeaderLink key={item.name} href={item.href}>
-                    {item.name}
-                </HeaderLink>
-            ))}
-        </Popover.Group>
+        <div className="md:pt-16 md:pb-10 text-slate-100 flex flex-col items-center">
+            <h1
+                className={cx(
+                    "pb-2",
+                    "font-medium tracking-widest",
+                    "text-3xl md:text-4xl lg:text-5xl xl:text-6xl"
+                )}
+            >
+                MEGAN <span className="font-thin">+</span> JAKE
+            </h1>
+            <SubHeader>JUNE 23, 2018 &middot; MILWAUKEE, WI</SubHeader>
+            <SubHeader className="hidden md:inline">
+                MARRIED FOR {days} DAYS!
+            </SubHeader>
+        </div>
+    );
+}
+
+function SubHeader({
+    className,
+    children,
+}: {
+    className?: string;
+    children: React.ReactNode;
+}) {
+    return (
+        <span
+            className={cx(
+                className,
+                "text-sm md:text-base lg:text-lg xl:text-xl",
+                // setting the font size above also sets the line height,
+                // so we need the explicit prefixes on the `leading-tight` below
+                "leading-tight md:leading-tight lg:leading-tight xl:leading-tight",
+                "tracking-wide words-wide"
+            )}
+        >
+            {children}
+        </span>
     );
 }
 
@@ -73,7 +119,11 @@ function HeaderLink({ href, children }: { href: string; children: string }) {
     );
 }
 
-function MobileHeaderPanel() {
+/**
+ * The mobile navigation manu, toggled by `MobileNavToggle`.
+ * This menu is only visible up to `md` screens.
+ */
+function MobileNav() {
     return (
         <Transition
             as={Fragment}
@@ -88,10 +138,6 @@ function MobileHeaderPanel() {
                 focus
                 className="absolute z-30 top-0 inset-x-0 p-2 transition transform origin-top-right md:hidden"
             >
-                {/**
-                 * This is the container for the visible content of the mobile popover panel.
-                 * It has rounded corners and a box shadow
-                 */}
                 <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white">
                     <div className="pt-5 pb-6 px-5">
                         <div className="flex items-center justify-end">
@@ -106,7 +152,7 @@ function MobileHeaderPanel() {
                             </div>
                         </div>
                     </div>
-                    <div className="pb-6 px-5">
+                    <nav className="pb-6 px-5">
                         <div className="grid grid-cols-2 gap-4">
                             {navigation.map((item) => (
                                 <a
@@ -118,7 +164,7 @@ function MobileHeaderPanel() {
                                 </a>
                             ))}
                         </div>
-                    </div>
+                    </nav>
                 </div>
             </Popover.Panel>
         </Transition>
