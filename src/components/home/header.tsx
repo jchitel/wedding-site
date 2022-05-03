@@ -39,8 +39,8 @@ export function Header() {
  */
 function MobileNavToggle() {
     return (
-        /* The `w-0` allows the header content to be centered in the overall container, ignoring the width of this button */
-        <div className="-mr-2 -my-2 md:hidden w-0">
+        /* The `w-2` allows the header content to be centered in the overall container, ignoring the width of this button */
+        <div className="-mr-2 -my-2 md:hidden w-2">
             <Popover.Button
                 className={cx(
                     "inline-flex items-center justify-center",
